@@ -30,3 +30,14 @@ vertexoffset = vertexrodspace + rodendoffset;
 renderrodthreads = false;
 renderscrewthreads = false;
 fn = 36;
+
+nema14_square=35.3;
+nema14_screws=26;
+nema14_hub=22;
+nema14_hub_depth=2;
+nema14_length=36;
+nema14_shaft=5;
+nema14_shaft_length=66;
+nema14_shaft_projection=19;
+
+bearing_mount_centres=18;

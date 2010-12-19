@@ -15,9 +15,9 @@ fileroot="DXF-files/";
 
 // Make a 7 mm thick extrusion from the appropriate profile
 
-module bearingProfile()
+module bearingProfile(b360=true)
 {
-	if(bearing_360 == 1)
+	if(b360)
 		linear_extrude(file = str(fileroot, "bearing360.dxf"), layer = "0", height = 7, 
 			center = true, convexity = 10, twist = 0, $fn=40);
 	else
@@ -51,9 +51,14 @@ module teardrop(radius,height,truncated)
 
 // The distance between the 3mm screw centres is 18 mm
 
-difference()
+module bearing(b360)
 {
-  	bearingProfile();
-	translate([4, -10, 0])rotate(90, [0, 1, 0]) rotate(-90, [1, 0, 0])teardrop(1.5, 50, false);
-	translate([22, -10, 0])rotate(90, [0, 1, 0]) rotate(-90, [1, 0, 0])teardrop(1.5, 50, false);
+	difference()
+	{
+  		bearingProfile(b360);
+		translate([4, -10, 0])rotate(90, [0, 1, 0]) rotate(-90, [1, 0, 0])teardrop(1.5, 50, false);
+		translate([22, -10, 0])rotate(90, [0, 1, 0]) rotate(-90, [1, 0, 0])teardrop(1.5, 50, false);
+	}
 }
+
+bearing(true);

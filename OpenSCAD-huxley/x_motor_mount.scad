@@ -6,21 +6,7 @@
 include <settings.scad>;
 include <teardrop.scad>;
 include <nema14_motor.scad>;
-
-motor_center_y = 26;
-screw_hole_r=screwsize/2;
-bar_clamp_x=5;
-bar_clamp_y=8;
-bar_clamp_x_gap=24;
-bearing_y=50;
-bearing_x=bar_clamp_x_gap + 10;
-hole_land=4;
-thickness=5;
-bearing_low_z = 5;
-bearing_z_gap = 30;
-bearing_plate_width = bearing_mount_centres+2*hole_land + 10;
-bearing_plate_overlap=0.5;
-bearing_plate_support=10;
+include <x_axis_parameters.scad>;
 
 //*****************************************************************************************************************
 
@@ -58,7 +44,7 @@ module oriented_teardrop()
 	translate([0, -2.5*thickness, 0])
 		rotate(a = 90, v = [0, 0, 1])
 			rotate(a = 90, v = [0, 1, 0])
-				teardrop(screw_hole_r, 4*thickness, true);
+				teardrop(screw_hole_r, 4*thickness, 0.5);
 }
 
 module bearing_plate()
@@ -72,9 +58,9 @@ module bearing_plate()
 			{
 				cube([bearing_plate_width, thickness + bearing_plate_support, 
 					bearing_low_z + bearing_z_gap + hole_land + thickness]);
-				translate([thickness, thickness, 0])
+				translate([thickness, thickness, - 5])
 					cube([bearing_plate_width - 2*thickness, 2*thickness + bearing_plate_support, 
-						bearing_low_z + bearing_z_gap + hole_land + thickness]);
+						bearing_low_z + bearing_z_gap + hole_land + thickness + 10]);
 			}
 		}
 

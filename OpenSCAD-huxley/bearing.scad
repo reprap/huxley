@@ -3,10 +3,6 @@
 
 // Adrian Bowyer 18 December 2010
 
-// Set this to 1 for a 360 degree bearing, 0 for a 180 degree one
-
-bearing_360 = 1;
-
 // The location in your file system where the .dxf files are
 
 fileroot="DXF-files/";
@@ -60,5 +56,7 @@ module bearing(b360)
 		translate([22, -10, 0])rotate(90, [0, 1, 0]) rotate(-90, [1, 0, 0])teardrop(1.5, 50, false);
 	}
 }
+
+// true for a 360 degree bearing, false for a 180 one.
 
 bearing(true);

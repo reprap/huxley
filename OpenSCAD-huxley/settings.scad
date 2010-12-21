@@ -41,3 +41,5 @@ nema14_shaft_length=66;
 nema14_shaft_projection=19;
 
 bearing_mount_centres=18;
+
+pi=3.1415926;

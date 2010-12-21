@@ -1,5 +1,5 @@
 
-// X motor mount
+// X idler mount
 
 // Adrian Bowyer 18 December 2010
 
@@ -15,7 +15,7 @@ bearing_plate_overlap=0;
 
 // And define some new ones
 
-bearing_thickness=6;
+bearing_thickness=6;  
 bearing_y_offset=6;
 
 
@@ -27,18 +27,14 @@ module base()
 	y_size = bearing_y + hole_land;
 	difference()
 	{
-		difference()
-		{
-			translate([-bearing_x - hole_land, 0, -thickness])
-				cube([x_size, y_size, thickness]);
-			translate([-bar_clamp_x_gap - hole_land, 0, -bearing_x])
-				rotate(a = 115, v = [0, 0, 1])
-					cube([2*bearing_y ,2*bearing_y , 8*thickness]);
-			translate([bar_clamp_x_gap+ hole_land, 0, -4*thickness])
-				rotate(a = -25, v = [0, 0, 1])
-					cube([2*bearing_y ,2*bearing_y , 8*thickness]);
-		}
-
+		translate([-bearing_x - hole_land, 0, -thickness])
+			cube([x_size, y_size, thickness]);
+		translate([-bar_clamp_x_gap - hole_land, 0, -bearing_x])
+			rotate(a = 120, v = [0, 0, 1])
+				cube([2*bearing_y ,2*bearing_y , 8*thickness]);
+		translate([bar_clamp_x_gap+ hole_land, 0, -4*thickness])
+			rotate(a = -30, v = [0, 0, 1])
+				cube([2*bearing_y ,2*bearing_y , 8*thickness]);
 	}
 }
 
@@ -52,28 +48,34 @@ module oriented_teardrop()
 
 module bearing_plate()
 {
-	translate([-thickness-bearing_thickness, -bearing_y_offset, 0])
-	rotate(a = 90, v = [0, 0, 1])
-	difference()
-	{
-		translate([-bearing_plate_width/2, bearing_plate_overlap - thickness, -thickness])
-		{
+	translate([-thickness-bearing_thickness-rodsize/2, -bearing_y_offset, 0])
+		rotate(a = 90, v = [0, 0, 1])
 			difference()
 			{
-				cube([bearing_plate_width, thickness + bearing_plate_support, 
-					bearing_low_z  + hole_land + thickness]);
-				translate([-thickness, thickness, - 5])
-					cube([bearing_plate_width, 2*thickness + bearing_plate_support, 
-						bearing_low_z + bearing_z_gap + hole_land + thickness + 10]);
+				translate([-bearing_plate_width/2, bearing_plate_overlap - thickness, -thickness])
+				{
+					difference()
+					{
+						cube([bearing_plate_width, thickness + bearing_plate_support, 
+							bearing_low_z  + hole_land + thickness]);
+						translate([-thickness, thickness, - 5])
+							cube([bearing_plate_width, 2*thickness + bearing_plate_support, 
+								bearing_low_z + bearing_z_gap + hole_land + thickness + 10]);
+						translate([-bearing_plate_width/2, 0, 0])
+							cube([bearing_plate_width + 10, bearing_plate_width, 
+								bearing_low_z  + hole_land + thickness + 40], center = true);
+						translate([0, bearing_plate_width-1.5*thickness, 0])
+							cube([2*bearing_plate_width, bearing_plate_width, 
+								bearing_low_z  + hole_land + thickness + 40], center = true);
+					}
+				}
+		
+				for ( x = [0:1] ) 
+				{
+					translate([(x-0.5)*bearing_mount_centres, 0, bearing_low_z])
+						oriented_teardrop();
+				}
 			}
-		}
-
-		for ( x = [0:1] ) 
-		{
-			translate([(x-0.5)*bearing_mount_centres, 0, bearing_low_z])
-				oriented_teardrop();
-		}
-	}
 }
 
 module cylindrical_z_holes()

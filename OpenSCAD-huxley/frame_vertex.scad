@@ -62,12 +62,19 @@ module with_foot_and_shelf(round)
 	union()
 	{
 		basic_vertex(round);
-		translate([-partthick*2.5,partthick*1.1 , 0.5*(partthick+bearing_mount_centres)]) 
+		translate([-partthick*2.3, 0.2*partthick, 0.5*(partthick+bearing_mount_centres)]) 
 			rotate([0, 0, 60])
 			{
-				cube([partthick*2,partthick/3,2*partthick+bearing_mount_centres], center=true);
-				translate([0.8*partthick,-partthick/6,-0.5*partthick-bearing_mount_centres/2])
-					cube([0.4*partthick,partthick/4,partthick], center=true);
+				difference()
+				{
+					cube([partthick*2,partthick/3,2*partthick+bearing_mount_centres], center=true);
+					translate([0.5*partthick,0,0.5*partthick])
+						cube([screwsize,partthick,2*partthick], center=true);
+					translate([-0.5*partthick,0,0.5*partthick])
+						cube([screwsize,partthick,2*partthick], center=true);
+				}
+				translate([1.1*partthick,0,-0.5*partthick-bearing_mount_centres/2])
+					cube([0.3*partthick,partthick/3,partthick], center=true);
 			}
 		translate([partthick*2.2, 0, 0]) 
 			rotate([0, 0, 60])
@@ -93,4 +100,4 @@ module frame_vertex(round = false, foot = false, left = false)
 	}
 }
 
-frame_vertex(foot = true, left=true);
+frame_vertex(foot = true, left=false);

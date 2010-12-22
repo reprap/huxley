@@ -1,7 +1,6 @@
 // TODO: add foot
 
 include <settings.scad>;
-include <teardrop.scad>;
 use <hardware.scad>;
 
 module basic_vertex(round = false) 

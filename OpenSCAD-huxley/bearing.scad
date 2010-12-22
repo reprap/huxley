@@ -4,7 +4,7 @@
 // Adrian Bowyer 18 December 2010
 
 include <settings.scad>;
-include <teardrop.scad>;
+use <hardware.scad>;
 
 // The location in your file system where the .dxf files are
 

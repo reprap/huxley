@@ -17,7 +17,7 @@ module nema14()
 			for ( y = [0:1] )
 			{
 				translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, 0])
-					cylinder(r = screw_hole_r, h = 30, center = true, $fn=10);
+					cylinder(r = screwsize/2, h = 30, center = true, $fn=10);
 			}
 		}
 	}

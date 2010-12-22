@@ -4,9 +4,9 @@
 // Adrian Bowyer 18 December 2010
 
 include <settings.scad>;
-include <teardrop.scad>;
 include <nema14_motor.scad>;
 include <x_axis_parameters.scad>;
+use<hardware.scad>
 
 // Rewrite some values
 

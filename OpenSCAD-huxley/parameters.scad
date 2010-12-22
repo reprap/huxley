@@ -40,6 +40,12 @@ renderrodthreads = false;
 renderscrewthreads = false;
 fn = 36;
 
+// The gap between the joining rods at a vertex
+
+vertex_radius=sqrt(rodsize*rodsize + vertexoffset*vertexoffset);
+vertex_ang = atan(vertexoffset/rodsize)-30;
+vertex_gap = 2*vertex_radius*cos(vertex_ang);
+
 // Nema 14 dimensions - these are absolute
 
 nema14_square=35.3;

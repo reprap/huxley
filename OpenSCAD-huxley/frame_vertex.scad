@@ -111,4 +111,4 @@ module frame_vertex(round = false, foot = false, left = false)
 	}
 }
 
-frame_vertex(round = false, foot = true, left=false);
+frame_vertex(round = false, foot = true, left=true);

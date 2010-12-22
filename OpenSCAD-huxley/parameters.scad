@@ -1,3 +1,12 @@
+// Parameters file for RepRap Huxley
+
+pi=3.1415926;
+
+// The relative location in your file system where the .dxf files are
+// DXFs are for quick development.  They should be replaced by parameterised CSG in dure course.
+
+fileroot="DXF-files/";
+
 rodsize = 6;	//threaded/smooth rod diameter in mm
 xaxis = 182.5;	//width of base in mm
 yaxis = 266.5;	//length of base in mm
@@ -31,6 +40,8 @@ renderrodthreads = false;
 renderscrewthreads = false;
 fn = 36;
 
+// Nema 14 dimensions - these are absolute
+
 nema14_square=35.3;
 nema14_screws=26;
 nema14_hub=22;
@@ -40,6 +51,24 @@ nema14_shaft=5;
 nema14_shaft_length=66;
 nema14_shaft_projection=19;
 
-bearing_mount_centres=18;
+// The RepRap slide bearings
 
-pi=3.1415926;
+bearing_mount_centres=18;
+bearing_width=7;
+
+// X axis parameters - many should be relative
+
+motor_center_y = 26;
+bar_clamp_x=5;
+bar_clamp_y=8;
+bar_clamp_x_gap=23;
+bearing_y=50;
+bearing_x=bar_clamp_x_gap + 10;
+hole_land=4;
+thickness=5;
+bearing_low_z = 8;
+bearing_z_gap = 25;
+bearing_plate_width = bearing_mount_centres+2*hole_land + 10;
+bearing_plate_overlap=0.5;
+bearing_plate_support=10;
+

@@ -3,10 +3,11 @@
 
 // Adrian Bowyer 18 December 2010
 
-include <settings.scad>;
+include <parameters.scad>;
 include <nema14_motor.scad>;
-include <x_axis_parameters.scad>;
-use<hardware.scad>
+use<library.scad>
+
+screw_hole_r=screwsize/2;
 
 //*****************************************************************************************************************
 

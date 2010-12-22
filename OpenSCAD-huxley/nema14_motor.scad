@@ -1,4 +1,5 @@
-include <settings.scad>;
+include <parameters.scad>;
+use <library.scad>
 
 module nema14()
 {

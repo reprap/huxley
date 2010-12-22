@@ -1,4 +1,4 @@
-include <settings.scad>;
+include <parameters.scad>;
 
 
 // Make a RepRap teardrop with its axis along Z

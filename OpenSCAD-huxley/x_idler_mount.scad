@@ -3,10 +3,9 @@
 
 // Adrian Bowyer 18 December 2010
 
-include <settings.scad>;
+include <parameters.scad>;
 include <nema14_motor.scad>;
-include <x_axis_parameters.scad>;
-use<hardware.scad>
+use<library.scad>
 
 // Rewrite some values
 
@@ -17,6 +16,7 @@ bearing_plate_overlap=0;
 
 bearing_thickness=6;  
 bearing_y_offset=6;
+screw_hole_r=screwsize/2;
 
 
 //*****************************************************************************************************************

@@ -1,26 +1,25 @@
 
 // Adjustable slide bearings for 6mm diameter rods mounted using M3 cap screws 18 mm apart.
 
+// The profile for these should be CSG from the parameters, but at the moment it's a dxf.
+
 // Adrian Bowyer 18 December 2010
 
-include <settings.scad>;
-use <hardware.scad>;
+include <parameters.scad>;
+use <library.scad>;
 
-// The location in your file system where the .dxf files are
-
-fileroot="DXF-files/";
 
 //*****************************************************************************************************************
 
-// Make a 7 mm thick extrusion from the appropriate profile
+// Make an extrusion from the appropriate profile
 
 module bearingProfile(b360=true)
 {
 	if(b360)
-		linear_extrude(file = str(fileroot, "bearing360.dxf"), layer = "0", height = 7, 
+		linear_extrude(file = str(fileroot, "bearing360.dxf"), layer = "0", height = bearing_width, 
 			center = true, convexity = 10, twist = 0, $fn=40);
 	else
-		linear_extrude(file = str(fileroot, "bearing180.dxf"), layer = "0", height = 7, 
+		linear_extrude(file = str(fileroot, "bearing180.dxf"), layer = "0", height = bearing_width, 
 			center = true, convexity = 10, twist = 0, $fn=40);
 }
 
@@ -42,4 +41,4 @@ module bearing(b360)
 
 // true for a 360 degree bearing, false for a 180 one.
 
-bearing(true);
+//bearing(false);

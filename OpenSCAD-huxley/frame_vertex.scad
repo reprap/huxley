@@ -1,7 +1,7 @@
-// TODO: add foot
 
-include <settings.scad>;
-use <hardware.scad>;
+
+include <parameters.scad>;
+use <library.scad>;
 
 module basic_vertex(round = false) 
 {

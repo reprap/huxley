@@ -1,6 +1,13 @@
 include <parameters.scad>;
 
 
+// inner and outer product.  Why aren't these standard?!!!?
+
+function ip(v1 = [0,0,0], v2 = [0,0,0]) = v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
+
+function op(v1 = [0,0,0], v2 = [0,0,0]) = [v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x];
+
+
 // Make a RepRap teardrop with its axis along Z
 // If truncated is true, chop the apex; if not, come to a point
 
@@ -29,6 +36,34 @@ module teardrop(radius, height, truncateMM)
 					cube([radius,radius,1]);
 		}
 		cylinder(r=radius, h = height, $fn=20);
+	}
+}
+
+// Make a cuboid with a 45 degree top for vertical slots etc
+
+module cen_hat(size)
+{
+	translate([0, 0, size.x/sqrt(2)])
+		union()
+		{
+			rotate([0, 45, 0])
+				cube([size.x, size.y, 5*max(size.x, max(size.y, size.z))], center=true);
+			rotate([0, -45, 0])
+				cube([size.x, size.y, 5*max(size.x, max(size.y, size.z))], center=true);
+		}
+}
+
+module hat_cube(size = [1,1,1], center = false)
+{
+	difference()
+	{
+		cube(size, center);
+		if(center)
+			translate([0, 0, size.z/2])
+				cen_hat(size);
+		else
+			translate([size.x/2, size.y/2, size.z])
+				cen_hat(size);
 	}
 }
 
@@ -112,12 +147,13 @@ module washer(position) render() translate ([0, 0, -position - washersize / 2]) 
 }
 
 
-rod(20);
-translate([rodsize * 2.5, 0, 0]) rod(20, true);
-translate([rodsize * 5, 0, 0]) screw(10, true);
-translate([rodsize * 7.5, 0, 0]) bearing();
-translate([rodsize * 10, 0, 0]) rodnut();
-translate([rodsize * 12.5, 0, 0]) rodwasher();
-translate([rodsize * 15, 0, 0]) nut();
-translate([rodsize * 17.5, 0, 0]) washer();
+//rod(20);
+//translate([rodsize * 2.5, 0, 0]) rod(20, true);
+//translate([rodsize * 5, 0, 0]) screw(10, true);
+//translate([rodsize * 7.5, 0, 0]) bearing();
+//translate([rodsize * 10, 0, 0]) rodnut();
+//translate([rodsize * 12.5, 0, 0]) rodwasher();
+//translate([rodsize * 15, 0, 0]) nut();
+//translate([rodsize * 17.5, 0, 0]) washer();
 
+//hat_cube(size=[2,40,2], center=false);

@@ -1,6 +1,6 @@
 // Parameters file for RepRap Huxley
 
-pi=3.1415926;
+pi=3.14159265;
 
 // The relative location in your file system where the .dxf files are
 // DXFs are for quick development.  They should be replaced by parameterised CSG in dure course.

@@ -66,14 +66,26 @@ module with_foot_and_shelf(round)
 			{
 				difference()
 				{
-					cube([partthick*2,partthick/3,2*partthick+bearing_mount_centres], center=true);
+					translate([0.5*partthick,0,0])
+						cube([partthick,partthick/3,2*partthick+bearing_mount_centres], center=true);
 					translate([0.5*partthick,0,0.5*partthick])
-						cube([screwsize,partthick,2*partthick], center=true);
-					translate([-0.5*partthick,0,0.5*partthick])
-						cube([screwsize,partthick,2*partthick], center=true);
+						hat_cube([screwsize,partthick,2*partthick], center=true);
+					//translate([-0.5*partthick,0,0.5*partthick])
+						//hat_cube([screwsize,partthick,2*partthick], center=true);
 				}
-				translate([1.1*partthick,0,-0.5*partthick-bearing_mount_centres/2])
-					cube([0.3*partthick,partthick/3,partthick], center=true);
+				translate([0.8*partthick,0,-0.5*partthick-bearing_mount_centres/2])
+				{
+					difference()
+					{
+						cube([partthick,partthick/1.5,partthick], center=true);
+						translate([0, partthick/1.5, 0])
+							rotate([0, 0, 10])
+								cube([3*partthick,partthick/1.5,partthick], center=true);
+						translate([0, -partthick/1.5, 0])
+							rotate([0, 0, -10])
+								cube([3*partthick,partthick/1.5,partthick], center=true);
+					}
+				}
 			}
 		translate([partthick*2.2, 0, 0]) 
 			rotate([0, 0, 60])
@@ -99,4 +111,4 @@ module frame_vertex(round = false, foot = false, left = false)
 	}
 }
 
-frame_vertex(foot = true, left=false);
+frame_vertex(round = false, foot = true, left=false);

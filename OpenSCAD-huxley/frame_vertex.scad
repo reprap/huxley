@@ -65,7 +65,7 @@ module with_foot_and_shelf(round)
 				difference()
 				{
 					translate([0.5*partthick,0,0])
-						cube([partthick,partthick/3,2*partthick+bearing_mount_centres], center=true);
+						cube([partthick,partthick/1.5,2*partthick+bearing_mount_centres], center=true);
 					translate([0.5*partthick,0,0.5*partthick])
 						hat_cube([screwsize,partthick,2*partthick], center=true);
 					//translate([-0.5*partthick,0,0.5*partthick])
@@ -76,12 +76,12 @@ module with_foot_and_shelf(round)
 					difference()
 					{
 						cube([partthick,partthick/1.5,partthick], center=true);
-						translate([0, partthick/1.5, 0])
+						/*translate([0, partthick/1.5, 0])
 							rotate([0, 0, 10])
 								cube([3*partthick,partthick/1.5,partthick], center=true);
 						translate([0, -partthick/1.5, 0])
 							rotate([0, 0, -10])
-								cube([3*partthick,partthick/1.5,partthick], center=true);
+								cube([3*partthick,partthick/1.5,partthick], center=true);*/
 					}
 				}
 			}

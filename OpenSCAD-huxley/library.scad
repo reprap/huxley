@@ -34,21 +34,26 @@ module nema14()
 
 // Pentagon nut that matches a hexagon...
 
-module pentanut()
+module pentanut(height=40)
 {
-intersection() {
-	cylinder (h = 4, r=1, center = true, $fn=100);
-	rotate ([90,0,0]) cylinder (h = 4, r=0.9, center = true, $fn=100);
-}
-/*	intersection()
+	rotate([0,0,60])
+	intersection()
 	{
-		for(i=[0:1])
-		{
-			rotate([0,0,60*i])
-				translate([-nutsize,-nutsize*5,-20])
-					cube([nutsize*10, nutsize*10,40]);
-		}
-	}*/
+		translate([-nutsize,-nutsize*5,-20])
+			cube([nutsize*10, nutsize*10,height]);
+		rotate([0,0,60])
+			translate([-nutsize,-nutsize*5,-20])
+				cube([nutsize*10, nutsize*10,height]);
+		rotate([0,0,120])
+			translate([-nutsize,-nutsize*5,-20])
+				cube([nutsize*10, nutsize*10,height]);
+		rotate([0,0,180])
+			translate([-nutsize,-nutsize*5,-20])
+				cube([nutsize*10, nutsize*10,height]);
+		rotate([0,0,240])
+			translate([-nutsize,-nutsize*5,-20])
+				cube([nutsize*10, nutsize*10,height]);
+	}
 }
 
 

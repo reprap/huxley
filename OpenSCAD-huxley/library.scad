@@ -7,6 +7,50 @@ function ip(v1 = [0,0,0], v2 = [0,0,0]) = v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 
 function op(v1 = [0,0,0], v2 = [0,0,0]) = [v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x];
 
+module nema14()
+{
+	color([1,0.4,0.4,1])
+	union()
+	{
+		translate([0, 0, nema14_shaft_length/2 - nema14_shaft_projection - nema14_hub_depth])
+			cylinder(r = nema14_shaft/2, h = nema14_shaft_length, center = true, $fn=20);
+		translate([0, 0, -nema14_hub_depth])
+			cylinder(r = nema14_hub/2, h = nema14_hub_depth*2, center = true, $fn=20);
+		translate([0, 0, nema14_length/2])
+			cube([nema14_square,nema14_square,nema14_length], center = true);
+		union()
+		{
+			for ( x = [0:1] ) 
+			for ( y = [0:1] )
+			{
+				translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, 0])
+					cylinder(r = screwsize/2, h = 30, center = true, $fn=10);
+			}
+		}
+	}
+
+
+}
+
+// Pentagon nut that matches a hexagon...
+
+module pentanut()
+{
+intersection() {
+	cylinder (h = 4, r=1, center = true, $fn=100);
+	rotate ([90,0,0]) cylinder (h = 4, r=0.9, center = true, $fn=100);
+}
+/*	intersection()
+	{
+		for(i=[0:1])
+		{
+			rotate([0,0,60*i])
+				translate([-nutsize,-nutsize*5,-20])
+					cube([nutsize*10, nutsize*10,40]);
+		}
+	}*/
+}
+
 
 // Make a RepRap teardrop with its axis along Z
 // If truncated is true, chop the apex; if not, come to a point
@@ -36,6 +80,28 @@ module teardrop(radius, height, truncateMM)
 					cube([radius,radius,1]);
 		}
 		cylinder(r=radius, h = height, $fn=20);
+	}
+}
+
+
+// Make a ball-bearing holder cutout
+
+module bearing_holder(radius = 6.5)
+{
+	union()
+	{
+		cylinder (h = radius*5, r = radius, center = true, $fn = 20);
+		for(i=[0:2])
+		{
+			rotate([0,0,120*i])
+				translate([radius+screwsize/2, 0, 0])
+					union()
+					{
+						cylinder (h = radius*5, r = screwsize/2, center = true, $fn = 20);
+						translate([-screwsize, 0, 0])
+							cube([2*screwsize, screwsize, radius*5], center = true);
+					}
+		}
 	}
 }
 
@@ -157,3 +223,7 @@ module washer(position) render() translate ([0, 0, -position - washersize / 2]) 
 //translate([rodsize * 17.5, 0, 0]) washer();
 
 //hat_cube(size=[2,40,2], center=false);
+
+//bearing_holder();
+
+pentanut();

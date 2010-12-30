@@ -10,7 +10,6 @@ zaz=20;
 
 module z_axis_motor_base()
 {
-mirror([0,1,0])
 	mirror([0,0,1])
 		difference()
 		{
@@ -25,30 +24,23 @@ mirror([0,1,0])
 
 // Body cavity
 
-				translate([0,0,-1])
-				{
-					translate([4,38,0])
-						cube([35,36,15]);
-					translate([8,11,0])
-						cube([31,34,15]);
-					//translate([39,44,0])
-						//cube([12,30,15]);
-					//translate([39,20,0])
-						//cube([12,13,15]);
-					translate([25,15,-5])
-						cube([40,50,15]);
-				}
+				//translate([-6,45,-40])
+					//cube([35,50,130]);
+				translate([8,11,-16])
+					cube([31,30,30]);
+				//translate([39,44,-16])
+					//cube([12,30,30]);
+				//translate([39,20,-16])
+					//cube([12,13,30]);
+				translate([10,15,-6])
+					cube([70,58,15]);
+
+// The adjuster slot
+
+				translate([37,43,-40])
+					rotate([0,0,45])
+						cube([3.5,35,130]);
 				
-// Motor holes
-
-				translate([21.5,57.5,20])
-				{
-					cylinder(r=nema14_hub/1.9,h=zay,center=true,$fn=40);
-					nema14();
-				}
-
-
-
 				
 // The bearing holder
 
@@ -58,8 +50,8 @@ mirror([0,1,0])
 				
 // Vertical M3 screw holes
 
-				translate([12,14,0])
-					cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
+				//translate([12,14,0])
+					//cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
 				translate([51,30,0])
 					cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
 				translate([51,53,0])
@@ -114,4 +106,3 @@ mirror([0,1,0])
 }
 
 z_axis_motor_base();
-

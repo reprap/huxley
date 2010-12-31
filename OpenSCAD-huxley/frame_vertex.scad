@@ -104,12 +104,12 @@ module frame_vertex(round = false, foot = false, left = false)
 		if(left)
 			with_foot_and_shelf(round);
 		else
-			mirror([0,0,1])
+			mirror([0,1,0])
 				with_foot_and_shelf(round);
 	}
 }
 
-frame_vertex(round = false, foot = true, left=true);
+frame_vertex(round = false, foot = true, left=false);
 
 
 

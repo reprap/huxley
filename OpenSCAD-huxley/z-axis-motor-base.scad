@@ -27,10 +27,10 @@ mirror([0,1,0])
 
 				translate([0,0,-1])
 				{
-					translate([4,38,0])
+					translate([4,38,-3])
 						cube([35,36,15]);
 					translate([8,11,0])
-						cube([31,34,15]);
+						cube([31,30,15]);
 					//translate([39,44,0])
 						//cube([12,30,15]);
 					//translate([39,20,0])

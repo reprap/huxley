@@ -48,7 +48,7 @@ mirror([0,1,0])
 				
 // The bearing holder
 
-				translate([26,26,0])
+				translate([23,26,0])
 					rotate([0,0,180])
 						bearing_holder(radius=9.5);
 				
@@ -56,9 +56,9 @@ mirror([0,1,0])
 
 				translate([12,14,0])
 					cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
-				translate([51,30,0])
+				translate([46,30,0])
 					cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
-				translate([51,53,0])
+				translate([46,53,0])
 					cylinder(r=screwsize/2,h=zay,center=true,$fn=20); 
 
 // The Z rod notch
@@ -68,7 +68,7 @@ mirror([0,1,0])
 				
 // The M6 rod in the triangle frame
 
-				translate([44,-10,14])
+				translate([52,-10,14])
 					rotate([0,-90,0])
 						rotate([-90,0,0])
 							teardrop(radius=rodsize/2,height=zay*2,truncateMM=0.5);

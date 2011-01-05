@@ -56,41 +56,96 @@ module basic_vertex(round = false)
 
 module with_foot_and_shelf(round)
 {
+	difference()
+	{
 	union()
 	{
-		basic_vertex(round);
-		translate([-partthick*2.3, 0.2*partthick, 0.5*(partthick+bearing_mount_centres)]) 
-			rotate([0, 0, 60])
+
+// Cross brace foot block
+	
+		mirror([0,1,0])
+		intersection()
+		{
+			translate([26,-10,0])
 			{
-				difference()
-				{
-					translate([0.5*partthick,0,0])
-						cube([partthick,partthick/1.5,2*partthick+bearing_mount_centres], center=true);
-					translate([0.5*partthick,0,0.5*partthick])
-						hat_cube([screwsize,partthick,2*partthick], center=true);
-					//translate([-0.5*partthick,0,0.5*partthick])
-						//hat_cube([screwsize,partthick,2*partthick], center=true);
-				}
-				translate([0.8*partthick,0,-0.5*partthick-bearing_mount_centres/2])
+				rotate(a = atan(yaxis/xaxis), v = [cos(30), sin(30), 0])
+					rotate([0,0,-60])
+					{
+						//translate([0,0,-20])
+							//teardrop(radius = rodsize/2, height = rodsize * 15, truncateMM = 1);//rod(rodsize * 15);
+						cube([30,16,12],center=true);
+					}
+			}
+			
+			translate([20,-14,0])
+				rotate([0,0,30])
+					cube([100,14,partthick],center=true);
+		}
+
+		union()
+		{
+			basic_vertex(round);
+	
+	// Shelf - Y bar holder
+	
+			translate([-partthick*2.3, 0.2*partthick, 0.5*(partthick+bearing_mount_centres)]) 
+				rotate([0, 0, 60])
 				{
 					difference()
 					{
-						cube([partthick,partthick/1.5,partthick], center=true);
-						/*translate([0, partthick/1.5, 0])
-							rotate([0, 0, 10])
-								cube([3*partthick,partthick/1.5,partthick], center=true);
-						translate([0, -partthick/1.5, 0])
-							rotate([0, 0, -10])
-								cube([3*partthick,partthick/1.5,partthick], center=true);*/
+						translate([0.5*partthick,0,0])
+							cube([partthick,partthick/1.5,2*partthick+bearing_mount_centres], center=true);
+						translate([0.5*partthick,0,0.5*partthick])
+							hat_cube([screwsize,partthick,2*partthick], center=true);
+						//translate([-0.5*partthick,0,0.5*partthick])
+							//hat_cube([screwsize,partthick,2*partthick], center=true);
+					}
+					translate([0.8*partthick,0,-0.5*partthick-bearing_mount_centres/2])
+					{
+						difference()
+						{
+							cube([partthick,partthick/1.5,partthick], center=true);
+							/*translate([0, partthick/1.5, 0])
+								rotate([0, 0, 10])
+									cube([3*partthick,partthick/1.5,partthick], center=true);
+							translate([0, -partthick/1.5, 0])
+								rotate([0, 0, -10])
+									cube([3*partthick,partthick/1.5,partthick], center=true);*/
+						}
 					}
 				}
+	
+	// Simple foot
+	
+	/*		translate([partthick*2.2, 0, 0]) 
+				rotate([0, 0, 60])
+					cube([partthick,partthick/3,partthick], center=true);
+			translate([partthick*1.9, partthick*0.6, 0]) 
+				rotate([0, 0, -60])
+					cube([1.4*partthick,partthick/3,partthick], center=true); */
+		}
+	}
+
+	// Cross brace foot hole
+	
+		mirror([0,1,0])
+		intersection()
+		{
+			translate([26,-10,0])
+			{
+				rotate(a = atan(yaxis/xaxis), v = [cos(30), sin(30), 0])
+					rotate([0,0,-60])
+					{
+						translate([0,0,-20])
+							teardrop(radius = rodsize/2, height = rodsize * 15, truncateMM = 1);//rod(rodsize * 15);
+						//cube([30,16,12],center=true);
+					}
 			}
-		translate([partthick*2.2, 0, 0]) 
-			rotate([0, 0, 60])
-				cube([partthick,partthick/3,partthick], center=true);
-		translate([partthick*1.9, partthick*0.6, 0]) 
-			rotate([0, 0, -60])
-				cube([1.4*partthick,partthick/3,partthick], center=true);
+			
+			translate([20,-14,0])
+				rotate([0,0,30])
+					cube([100,14,partthick],center=true);
+		}
 	}
 }
 
@@ -110,7 +165,6 @@ module frame_vertex(round = false, foot = false, left = false)
 }
 
 frame_vertex(round = false, foot = true, left=false);
-
 
 
 

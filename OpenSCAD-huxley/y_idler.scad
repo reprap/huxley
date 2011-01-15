@@ -11,9 +11,21 @@ module y_idler()
 			cube([vertex_gap+2*rodsize, 4*rodsize, 1.5*rodsize], center = true);
 
 		translate([-vertex_gap/2, 0, 0]) 
-			cylinder(h = 3*rodsize, r = rodsize / 2, center = true, $fn = fn);
+			union()
+			{
+				cylinder(h = 3*rodsize, r = rodsize / 2, center = true, $fn = fn);
+				translate([-rodsize, 0, 0]) 
+					cube([2*rodsize, rodsize, 3*rodsize], center=true);
+			}
+			
 		translate([vertex_gap/2, 0, 0]) 
-			cylinder(h = 3*rodsize, r = rodsize / 2, center = true, $fn = fn);
+			union()
+			{
+				cylinder(h = 3*rodsize, r = rodsize / 2, center = true, $fn = fn);
+				translate([rodsize, 0, 0]) 
+					cube([2*rodsize, rodsize, 3*rodsize], center=true);
+			}
+			
 
 		translate([0, 7*rodsize, 0])
 			rotate([0,0,15])

@@ -70,11 +70,7 @@ module with_foot_and_shelf(round)
 			{
 				rotate(a = atan(yaxis/xaxis), v = [cos(30), sin(30), 0])
 					rotate([0,0,-60])
-					{
-						//translate([0,0,-20])
-							//teardrop(radius = rodsize/2, height = rodsize * 15, truncateMM = 1);//rod(rodsize * 15);
 						cube([30,16,12],center=true);
-					}
 			}
 			
 			translate([20,-14,0])
@@ -93,12 +89,10 @@ module with_foot_and_shelf(round)
 				{
 					difference()
 					{
-						translate([0.5*partthick,0,0])
-							cube([partthick,partthick/1.5,2*partthick+bearing_mount_centres], center=true);
-						translate([0.5*partthick,0,0.5*partthick])
-							hat_cube([screwsize,partthick,2*partthick], center=true);
-						//translate([-0.5*partthick,0,0.5*partthick])
-							//hat_cube([screwsize,partthick,2*partthick], center=true);
+						translate([0.1*partthick,0,0.25*partthick])
+							cube([1.4*partthick,partthick/1.5,2.5*partthick+bearing_mount_centres], center=true);
+						translate([0.1*partthick,0,0.5*partthick])
+							hat_cube([screwsize,partthick,3*partthick], center=true);
 					}
 					translate([0.8*partthick,0,-0.5*partthick-bearing_mount_centres/2])
 					{
@@ -135,11 +129,8 @@ module with_foot_and_shelf(round)
 			{
 				rotate(a = atan(yaxis/xaxis), v = [cos(30), sin(30), 0])
 					rotate([0,0,-60])
-					{
 						translate([0,0,-20])
 							teardrop(radius = rodsize/2, height = rodsize * 15, truncateMM = 1);//rod(rodsize * 15);
-						//cube([30,16,12],center=true);
-					}
 			}
 			
 			translate([20,-14,0])
@@ -164,7 +155,7 @@ module frame_vertex(round = false, foot = false, left = false)
 	}
 }
 
-frame_vertex(round = false, foot = true, left=false);
+frame_vertex(round = false, foot = true, left=true);
 
 
 

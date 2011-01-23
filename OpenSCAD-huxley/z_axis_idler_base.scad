@@ -45,8 +45,6 @@ module z_axis_motor_base()
 				
 // Vertical M3 screw holes
 
-				//translate([12,14,0])
-					//cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
 				translate([46,30,0])
 					cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
 				translate([46,53,0])
@@ -62,24 +60,24 @@ module z_axis_motor_base()
 				translate([52,-10,14])
 					rotate([0,-90,0])
 						rotate([-90,0,0])
-							teardrop(radius=rodsize/2,height=zay*2,truncateMM=0.5);
+							teardrop(r=rodsize/2,h=zay*2,truncateMM=0.5);
 		
 // The M6 strengthening rods that run across
 		
 				translate([zax+10,6,6])
 					rotate([0,-90,0])
-						teardrop(radius=rodsize/2,height=zay*2,truncateMM=0.5);
+						teardrop(r=rodsize/2,h=zay*2,truncateMM=0.5);
 				
 				translate([zax+10,78,6])
 					rotate([0,-90,0])
-						teardrop(radius=rodsize/2,height=zay*2,truncateMM=0.5);
+						teardrop(r=rodsize/2, h=zay*2,truncateMM=0.5);
 				
 //  Z-rod clamp M3 holes
 
 				translate([20,20,10])
 					rotate([0,-90,0])
 					{
-						teardrop(radius=screwsize/2,height=zay*2,truncateMM=0);
+						teardrop(r=screwsize/2,h=zay*2,truncateMM=0);
 						translate([0,0,25])
 						pentanut(10);
 					}
@@ -87,7 +85,7 @@ module z_axis_motor_base()
 				translate([20,32,10])
 					rotate([0,-90,0])
 					{
-						teardrop(radius=screwsize/2,height=zay*2,truncateMM=0);
+						teardrop(r=screwsize/2,h=zay*2,truncateMM=0);
 						translate([0,0,25])
 						pentanut(10);
 					}

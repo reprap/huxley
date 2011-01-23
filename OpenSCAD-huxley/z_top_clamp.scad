@@ -11,18 +11,18 @@ module z_top_clamp()
 		
 			translate([vertex_gap/2, 0, -partthick])
 				rotate([0,0,90])
-					teardrop(radius=rodsize/2 , height=partthick*2,truncateMM=0.5);
+					teardrop(r=rodsize/2 , h=partthick*2,truncateMM=0.5);
 			translate([-vertex_gap/2, 0, -partthick])
 				rotate([0,0,90])
-					teardrop(radius=rodsize/2 , height=partthick*2,truncateMM=0.5);
+					teardrop(r=rodsize/2 , h=partthick*2,truncateMM=0.5);
 		
 			translate([-(rodsize+screwsize)/2, 0, -partthick])
 				rotate([0,0,90])
-					teardrop(radius=screwsize/2 , height=partthick*2,truncateMM=-1);
+					teardrop(r=screwsize/2 , h=partthick*2,truncateMM=-1);
 		
 			translate([(rodsize+screwsize)/2, 0, -partthick])
 				rotate([0,0,90])
-					teardrop(radius=screwsize/2 , height=partthick*2,truncateMM=-1);
+					teardrop(r=screwsize/2 , h=partthick*2,truncateMM=-1);
 		
 			rotate([90,0,0])
 				rod(partthick*2);

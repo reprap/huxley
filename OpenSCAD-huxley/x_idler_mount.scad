@@ -43,7 +43,7 @@ module oriented_teardrop()
 	translate([0, -2.5*thickness, 0])
 		rotate(a = 90, v = [0, 0, 1])
 			rotate(a = 90, v = [0, 1, 0])
-				teardrop(screw_hole_r, 4*thickness, 0.5);
+				teardrop(r = screw_hole_r, h = 4*thickness, truncateMM=0.5);
 }
 
 module bearing_plate()

@@ -7,30 +7,55 @@ function ip(v1 = [0,0,0], v2 = [0,0,0]) = v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 
 function op(v1 = [0,0,0], v2 = [0,0,0]) = [v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x];
 
-module nema14()
+
+/*
+  This gives either a NEMA 14 stepper motor or its mounting holes.
+
+  If body is true, you get the motor.  If it is false you get the screw holes and central
+  hole needed to mount the motor.  If counterbore is positive and you are generating the mounting holes
+  then the screw holes will get fat to accomodate a cap-screw head counterbore mm away from the face 
+  of the motor.  For no counterbores, set counterbore negative.
+
+*/
+
+module nema14(body = true, counterbore = -1)
 {
 	color([1,0.4,0.4,1])
 	union()
 	{
-		translate([0, 0, nema14_shaft_length/2 - nema14_shaft_projection - nema14_hub_depth])
-			cylinder(r = nema14_shaft/2, h = nema14_shaft_length, center = true, $fn=20);
-		translate([0, 0, -nema14_hub_depth])
-			cylinder(r = nema14_hub/2, h = nema14_hub_depth*2, center = true, $fn=20);
-		translate([0, 0, nema14_length/2])
-			cube([nema14_square,nema14_square,nema14_length], center = true);
-		union()
+		if(body)
 		{
-			for ( x = [0:1] ) 
-			for ( y = [0:1] )
+			translate([0, 0, nema14_shaft_length/2 - nema14_shaft_projection - nema14_hub_depth])
+				cylinder(r = nema14_shaft/2, h = nema14_shaft_length, center = true, $fn=20);
+			translate([0, 0, -nema14_hub_depth])
+				cylinder(r = nema14_hub/2, h = nema14_hub_depth*2, center = true, $fn=20);
+	
+			translate([0, 0, nema14_length/2])
+				cube([nema14_square,nema14_square,nema14_length], center = true);
+		} else
+			translate([0, 0, -20])
+				cylinder(r = nema14_hub/2 + 1, h = 50, center = true, $fn=20);
+
+		if(!body)
+		{
+			union()
 			{
-				translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, 0])
-					cylinder(r = screwsize/2, h = 30, center = true, $fn=10);
+				for ( x = [0:1] ) 
+				for ( y = [0:1] )
+				{
+					translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, -20])
+						cylinder(r = screwsize/2, h = 50, center = true, $fn=10);
+					if(counterbore >= 0)
+						translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, -25-counterbore])
+							cylinder(r = screwsize, h = 50, center = true, $fn=10);
+				}
 			}
 		}
 	}
 
 
 }
+
 
 // Pentagon nut that matches a hexagon...
 
@@ -63,7 +88,7 @@ module pentanut(height=40)
 // I stole this function from Erik...
 
 
-module teardrop(radius, height, truncateMM)
+module teardrop(r=1.5, h=20, truncateMM=0.5)
 {
 	union()
 	{
@@ -71,20 +96,20 @@ module teardrop(radius, height, truncateMM)
 		{
 			intersection()
 			{
-				translate([truncateMM,0,height/2]) 
-					scale([1,1,height])
-						cube([radius*2.8275,radius*2,1],center=true);
-				scale([1,1,height]) 
+				translate([truncateMM,0,h/2]) 
+					scale([1,1,h])
+						cube([r*2.8275,r*2,1],center=true);
+				scale([1,1,h]) 
 						rotate([0,0,3*45])
-							cube([radius,radius,1]);
+							cube([r,r,1]);
 			}
 		} else
 		{
-			scale([1,1,height])
+			scale([1,1,h])
 				rotate([0,0,3*45])
-					cube([radius,radius,1]);
+					cube([r,r,1]);
 		}
-		cylinder(r=radius, h = height, $fn=20);
+		cylinder(r=r, h = h, $fn=20);
 	}
 }
 
@@ -95,16 +120,16 @@ module bearing_holder(radius = 6.5)
 {
 	union()
 	{
-		cylinder (h = radius*5, r = radius, center = true, $fn = 20);
+		cylinder (h = radius*20, r = radius, center = true, $fn = 20);
 		for(i=[0:2])
 		{
 			rotate([0,0,120*i])
 				translate([radius+screwsize/2, 0, 0])
 					union()
 					{
-						cylinder (h = radius*5, r = screwsize/2, center = true, $fn = 20);
+						cylinder (h = radius*20, r = screwsize/2, center = true, $fn = 20);
 						translate([-screwsize, 0, 0])
-							cube([2*screwsize, screwsize, radius*5], center = true);
+							cube([2*screwsize, screwsize, radius*20], center = true);
 					}
 		}
 	}
@@ -231,4 +256,8 @@ module washer(position) render() translate ([0, 0, -position - washersize / 2]) 
 
 //bearing_holder();
 
-pentanut();
+//teardrop();
+
+//pentanut();
+
+//nema14(body = true, counterbore = -1);

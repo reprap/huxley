@@ -4,7 +4,6 @@
 // Adrian Bowyer 18 December 2010
 
 include <parameters.scad>;
-include <nema14_motor.scad>;
 use<library.scad>
 
 screw_hole_r=screwsize/2;
@@ -45,7 +44,7 @@ module oriented_teardrop()
 	translate([0, -2.5*thickness, 0])
 		rotate(a = 90, v = [0, 0, 1])
 			rotate(a = 90, v = [0, 1, 0])
-				teardrop(radius=screw_hole_r, height=4*thickness, truncateMM=-1);
+				teardrop(r=screw_hole_r, h=4*thickness, truncateMM=-1);
 }
 
 module bearing_plate()
@@ -86,22 +85,9 @@ module cylindrical_z_holes()
 			cylinder(r = screw_hole_r, h = 30, center = true, $fn=10);
 		translate([bearing_x, bearing_y, 0])
 			cylinder(r = screw_hole_r, h = 30, center = true, $fn=10);
-		translate([0, motor_center_y, 0])
-		union()
-		{
-	
-			cylinder(r = 1+nema14_hub/2, h = 30, center = true, $fn=20);
+		translate([0, motor_center_y, thickness])
 			rotate(a = 45, v = [0, 0, 1])
-				union()
-				{
-					for ( x = [0:1] ) 
-					for ( y = [0:1] )
-					{
-						translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, 0])
-							cylinder(r = screw_hole_r, h = 30, center = true, $fn=10);
-					}
-				}
-		}
+				nema14(body=false, counterbore = -1);
 	}
 }
 
@@ -121,6 +107,6 @@ module x_motor_mount()
 
 x_motor_mount();
 
-//translate([0, motor_center_y, thickness])
-//	rotate(a = 45, v = [0, 0, 1])
-//		nema14();
+/*translate([0, motor_center_y, thickness])
+	rotate(a = 45, v = [0, 0, 1])
+		nema14(body=true, counterbore = -1);*/

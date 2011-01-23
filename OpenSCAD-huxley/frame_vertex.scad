@@ -44,7 +44,7 @@ module basic_vertex(round = false)
 			rotate([90, 0, side * 30])
 				translate([0, 0, -rodsize * 7.5]) 
 					rotate([0, 0, -90])
-						teardrop(radius = rodsize/2, height = rodsize * 15, truncateMM = 1);//rod(rodsize * 15);
+						teardrop(r = rodsize/2, h = rodsize * 15, truncateMM = 1);//rod(rodsize * 15);
 			rotate([0, 0, side * 30]) 
 			{
 				translate([-side * rodsize, vertexoffset, 0]) 
@@ -130,7 +130,7 @@ module with_foot_and_shelf(round)
 				rotate(a = atan(yaxis/xaxis), v = [cos(30), sin(30), 0])
 					rotate([0,0,-60])
 						translate([0,0,-20])
-							teardrop(radius = rodsize/2, height = rodsize * 15, truncateMM = 1);//rod(rodsize * 15);
+							teardrop(r = rodsize/2, h = rodsize * 15, truncateMM = 1);
 			}
 			
 			translate([20,-14,0])

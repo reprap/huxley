@@ -32,13 +32,13 @@ module bearing(b360)
   		bearingProfile(b360);
 		translate([4, -10, 0])rotate(90, [0, 1, 0])
 			rotate(-90, [1, 0, 0])
-				teardrop(1.5, 50, false);
+				teardrop(r=1.5, h=50, truncateMM=-1);
 		translate([22, -10, 0])rotate(90, [0, 1, 0])
 			rotate(-90, [1, 0, 0])
-				teardrop(1.5, 50, false);
+				teardrop(r=1.5, h=50, truncateMM=-1);
 	}
 }
 
 // true for a 360 degree bearing, false for a 180 one.
 
-//bearing(false);
+//bearing(true);

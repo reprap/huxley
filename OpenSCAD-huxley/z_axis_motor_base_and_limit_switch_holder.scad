@@ -7,11 +7,23 @@ zaz=20;
 
 //import_stl("../z-leadscrew-base-motor_2.stl", convexity = 7);
 
+module bearing_and_mount_screw(teardrop=false)
+{
+
+				translate([23,26,0])
+					rotate([0,0,180])
+						bearing_holder(radius=9.5);
+
+				translate([12,14,0])
+					if(teardrop)
+						rotate([0,0,-90])
+							teardrop(r=screwsize/2,h=zay,truncateMM=-1);
+					else
+						cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
+}
 
 module z_axis_motor_base()
 {
-mirror([0,1,0])
-	mirror([0,0,1])
 		difference()
 		{
 			// Starting block
@@ -38,24 +50,16 @@ mirror([0,1,0])
 // Motor holes
 
 				translate([21.5,57.5,20])
-				{
-					cylinder(r=nema14_hub/1.9,h=zay,center=true,$fn=40);
-					nema14();
-				}
+					nema14(body=false, counterbore=-1);
 
 
-
+				bearing_and_mount_screw(teardrop=false);
 				
-// The bearing holder
 
-				translate([23,26,0])
-					rotate([0,0,180])
-						bearing_holder(radius=9.5);
 				
 // Vertical M3 screw holes
 
-				translate([12,14,0])
-					cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
+
 				translate([46,30,0])
 					cylinder(r=screwsize/2,h=zay,center=true,$fn=20);
 				translate([46,53,0])
@@ -71,24 +75,24 @@ mirror([0,1,0])
 				translate([52,-10,14])
 					rotate([0,-90,0])
 						rotate([-90,0,0])
-							teardrop(radius=rodsize/2,height=zay*2,truncateMM=0.5);
+							teardrop(r=rodsize/2,h=zay*2,truncateMM=0.5);
 		
 // The M6 strengthening rods that run across
 		
 				translate([zax+10,6,6])
 					rotate([0,-90,0])
-						teardrop(radius=rodsize/2,height=zay*2,truncateMM=0.5);
+						teardrop(r=rodsize/2,h=zay*2,truncateMM=0.5);
 				
 				translate([zax+10,78,6])
 					rotate([0,-90,0])
-						teardrop(radius=rodsize/2,height=zay*2,truncateMM=0.5);
+						teardrop(r=rodsize/2,h=zay*2,truncateMM=0.5);
 				
 //  Z-rod clamp M3 holes
 
 				translate([20,20,10])
 					rotate([0,-90,0])
 					{
-						teardrop(radius=screwsize/2,height=zay*2,truncateMM=0);
+						teardrop(r=screwsize/2,h=zay*2,truncateMM=0);
 						translate([0,0,25])
 						pentanut(10);
 					}
@@ -96,7 +100,7 @@ mirror([0,1,0])
 				translate([20,32,10])
 					rotate([0,-90,0])
 					{
-						teardrop(radius=screwsize/2,height=zay*2,truncateMM=0);
+						teardrop(r=screwsize/2,h=zay*2,truncateMM=0);
 						translate([0,0,25])
 						pentanut(10);
 					}
@@ -109,5 +113,39 @@ mirror([0,1,0])
 		}
 }
 
+
+module z_limit_switch_mount()
+{
+	difference()
+	{
+		translate([8,4,zaz])
+		{
+			difference()
+			{
+				cube([25,15,40]);
+
+				translate([-5,5,5])
+					cube([30,15,40]);
+
+				translate([-10, -5, 0])
+					rotate([0,7,0])
+						cube([20,100,100],center=true);
+				translate([35, -5, 0])
+					rotate([0,-7,0])
+						cube([20,100,100],center=true);
+
+				translate([12.5+limit_switch_centres/2,0,37])
+					rotate([90,0,0])
+						cylinder(r=limit_switch_hole_diameter/2,h=zay,center=true,$fn=20);
+				translate([12.5-limit_switch_centres/2,0,37])
+					rotate([90,0,0])
+						cylinder(r=limit_switch_hole_diameter/2,h=zay,center=true,$fn=20);
+			}
+		}
+		bearing_and_mount_screw(teardrop=true);
+	}
+}
+
+z_limit_switch_mount();
 z_axis_motor_base();
 

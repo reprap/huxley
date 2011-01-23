@@ -57,6 +57,11 @@ nema14_shaft=5;
 nema14_shaft_length=66;
 nema14_shaft_projection=19;
 
+// Limit switch parameters
+
+limit_switch_hole_diameter=2.5;
+limit_switch_centres=9.5;
+
 // The RepRap slide bearings
 
 bearing_mount_centres=18;
@@ -64,6 +69,7 @@ bearing_width=7;
 
 // X axis parameters - many should be relative
 
+x_bar_gap=30;
 motor_center_y = 26;
 bar_clamp_x=5;
 bar_clamp_y=8;

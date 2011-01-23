@@ -16,11 +16,11 @@ module y_bar_clamp()
 		translate([rodsize, 2*rodsize, 0])
 		rotate([90, 0, 0])
 			rotate([0, 0, -90])
-				teardrop(radius = screwsize/2, height = rodsize * 5, truncateMM = 0.5);
+				teardrop(r = screwsize/2, h = rodsize * 5, truncateMM = 0.5);
 		translate([-rodsize, 2*rodsize, 0])
 		rotate([90, 0, 0])
 			rotate([0, 0, -90])
-				teardrop(radius = screwsize/2, height = rodsize * 5, truncateMM = 0.5);
+				teardrop(r = screwsize/2, h = rodsize * 5, truncateMM = 0.5);
 	}
 }
 

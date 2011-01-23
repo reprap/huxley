@@ -70,6 +70,15 @@ module bearing_plate()
 			translate([(x-0.5)*bearing_mount_centres, 0, bearing_low_z + y*bearing_z_gap])
 				oriented_teardrop();
 		}
+
+		// Limit switch mounting holes
+
+		translate([-40,4,25])
+			rotate([0,90,0])
+				teardrop(r=limit_switch_hole_diameter/2, h=40, truncateMM=-1);
+		translate([-40,4,25-limit_switch_centres])
+			rotate([0,90,0])
+				teardrop(r=limit_switch_hole_diameter/2, h=40, truncateMM=-1);
 	}
 }
 

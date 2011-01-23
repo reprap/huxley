@@ -96,10 +96,10 @@ module y_limit_switch_mount(z_offset = 0)
 					}
 					translate([0,8,7])
 						rotate([0,90,0])
-							cylinder(h = 20*rodsize, r = 1.25, center = true, $fn = fn);
-					translate([0,8,17])
+							cylinder(h = 20*rodsize, r = limit_switch_hole_diameter/2, center = true, $fn = fn);
+					translate([0,8,7+limit_switch_centres])
 						rotate([0,90,0])
-							cylinder(h = 20*rodsize, r = 1.25, center = true, $fn = fn);
+							cylinder(h = 20*rodsize, r = limit_switch_hole_diameter/2, center = true, $fn = fn);
 				}
 		
 			}

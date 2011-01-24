@@ -114,7 +114,7 @@ module z_axis_motor_base()
 }
 
 
-module z_limit_switch_mount()
+module z_limit_switch_holder()
 {
 	difference()
 	{
@@ -146,6 +146,6 @@ module z_limit_switch_mount()
 	}
 }
 
-z_limit_switch_mount();
-z_axis_motor_base();
+z_limit_switch_holder();
+//z_axis_motor_base();
 

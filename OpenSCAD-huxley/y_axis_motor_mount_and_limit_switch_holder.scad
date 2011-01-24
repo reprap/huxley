@@ -109,7 +109,7 @@ module y_limit_switch_mount(z_offset = 0)
 		belt_bearing_holes(teardrop=true);
 	}
 }
-
+rotate([0,0,30])
 y_limit_switch_mount();
-y_axis_motor_mount();
+//y_axis_motor_mount();
 

@@ -9,6 +9,28 @@ function op(v1 = [0,0,0], v2 = [0,0,0]) = [v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1
 
 
 /*
+  This makes an angled strut in space between two points.  It is parallel to one of the
+  coordinate planes, which means that one coordinate of the two endpoints must be the same.
+
+
+module strut(p1=[0,0,0], p2=[0,0,1], deep = 5, wide = 10)
+{
+	if(abs(p1.x - p2.x) < 0.00001)
+	{
+
+	} else if(abs(p1.y - p2.y) < 0.00001)
+	{
+
+	} else
+	{
+
+		cube([sqrt(
+
+	}
+}
+*/
+
+/*
   This gives either a NEMA 14 stepper motor or its mounting holes.
 
   If body is true, you get the motor.  If it is false you get the screw holes and central

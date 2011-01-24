@@ -73,10 +73,10 @@ module bearing_plate()
 
 		// Limit switch mounting holes
 
-		translate([-40,4,25])
+		translate([-40,4,12])
 			rotate([0,90,0])
 				teardrop(r=limit_switch_hole_diameter/2, h=40, truncateMM=-1);
-		translate([-40,4,25-limit_switch_centres])
+		translate([-40,4,12+limit_switch_centres])
 			rotate([0,90,0])
 				teardrop(r=limit_switch_hole_diameter/2, h=40, truncateMM=-1);
 	}

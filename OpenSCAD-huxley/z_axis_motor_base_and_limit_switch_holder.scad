@@ -122,10 +122,23 @@ module z_limit_switch_holder()
 		{
 			difference()
 			{
-				cube([25,15,40]);
-
-				translate([-5,5,5])
-					cube([30,15,40]);
+				union()
+				{
+					difference()
+					{
+						cube([25,15,40]);
+						translate([-5,5,5])
+							cube([30,15,40]);
+					}
+					translate([10,4,4])
+						difference()
+						{
+							cube([5,10,25]);
+							translate([-1,10,-1])
+								rotate([20,0,0])
+									cube([10,10,50]);
+						}
+				}
 
 				translate([-10, -5, 0])
 					rotate([0,7,0])
@@ -147,5 +160,5 @@ module z_limit_switch_holder()
 }
 
 z_limit_switch_holder();
-//z_axis_motor_base();
+z_axis_motor_base();
 

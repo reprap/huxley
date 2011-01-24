@@ -30,4 +30,41 @@ module x_axis_z_nut_holder()
 	}
 }
 
+stretch=1.5;
+
+module z_height_adjuster()
+{
+	difference()
+	{
+		union()
+		{
+			scale([1,1,stretch])
+				rotate([0,45,0])
+					difference()
+					{
+						cube([30,8,30],center=true);
+						cube([24,20,24],center=true);
+					}
+			translate([15*sqrt(2)-2,0,0])
+				cube([5,8,8],center=true);
+	
+			translate([-15*sqrt(2)+2,0,0])
+				cube([5,8,8],center=true);
+
+			translate([0,0,stretch*(15*sqrt(2)-2)])
+				cube([20,20,5],center=true);
+	
+			translate([0,0,stretch*(-15*sqrt(2)+2)])
+				cube([20,20,5],center=true);
+		}
+		translate([-50,0,0])
+			rotate([90,0,0])
+				rotate([0,90,0])
+					teardrop(r=screwsize/2,h=100,truncateMM=-1);
+	}
+}
+
 x_axis_z_nut_holder();
+
+translate([0,25,0])
+z_height_adjuster();

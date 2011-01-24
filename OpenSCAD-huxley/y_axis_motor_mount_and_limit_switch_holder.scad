@@ -66,7 +66,7 @@ module y_axis_motor_mount()
 			rotate([180,0,-30])
 			{
 				mirror([0,0,1])
-					nema14(body=false, counterbore = 8);
+					nema14(body=false, counterbore = 9.5);
 				translate([0,nema14_square*1.05 ,-rodsize])
 					cube([2*(vertex_gap+rodsize), 6*rodsize, 6*rodsize], center = true);
 				translate([nema14_square*1.05 , 0, -rodsize])
@@ -109,7 +109,7 @@ module y_limit_switch_mount(z_offset = 0)
 		belt_bearing_holes(teardrop=true);
 	}
 }
-rotate([0,0,30])
+//rotate([0,0,30])
 y_limit_switch_mount();
-//y_axis_motor_mount();
+y_axis_motor_mount();
 

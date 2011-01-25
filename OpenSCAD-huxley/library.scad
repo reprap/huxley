@@ -11,24 +11,37 @@ function op(v1 = [0,0,0], v2 = [0,0,0]) = [v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1
 /*
   This makes an angled strut in space between two points.  It is parallel to one of the
   coordinate planes, which means that one coordinate of the two endpoints must be the same.
+*/
 
+module strut_block(da, db, wide, deep, round=true)
+{
+	translate([-wide/2,-deep/2,0])
+		cube([wide, deep, sqrt(da*da + db*db)]);
+}
 
-module strut(p1=[0,0,0], p2=[0,0,1], deep = 5, wide = 10)
+module strut(p1=[0,0,0], p2=[0,0,1], wide = 10, deep = 5, round=true)
 {
 	if(abs(p1.x - p2.x) < 0.00001)
 	{
-
+		translate(p1)
+			rotate([atan2(p2.z - p1.z, p2.y - p1.y), 0, 0])
+				rotate([-90,0,0])
+					rotate([0,0,90])
+						strut_block(p2.y - p1.y, p2.z - p1.z, wide, deep);
 	} else if(abs(p1.y - p2.y) < 0.00001)
 	{
-
+		translate(p1)
+			rotate([0,atan2( p2.x - p1.x, p2.z - p1.z), 0])
+					strut_block(p2.x - p1.x, p2.z - p1.z, wide, deep);
 	} else
 	{
-
-		cube([sqrt(
-
+		translate(p1)
+			rotate([0,0,atan2(p2.y - p1.y, p2.x - p1.x)])
+				rotate([0,90,0])
+					strut_block(p2.x - p1.x, p2.y - p1.y, wide, deep);
 	}
 }
-*/
+
 
 /*
   This gives either a NEMA 14 stepper motor or its mounting holes.
@@ -283,3 +296,5 @@ module washer(position) render() translate ([0, 0, -position - washersize / 2]) 
 //pentanut();
 
 //nema14(body = true, counterbore = -1);
+
+//strut(p1=[20,10,20], p2=[20, 60, 40], wide=10, deep=5);

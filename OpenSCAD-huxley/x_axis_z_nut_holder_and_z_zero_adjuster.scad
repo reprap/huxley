@@ -31,6 +31,7 @@ module x_axis_z_nut_holder()
 }
 
 stretch=1.5;
+halfwidth=12;
 
 module z_height_adjuster()
 {
@@ -38,33 +39,48 @@ module z_height_adjuster()
 	{
 		union()
 		{
-			scale([1,1,stretch])
-				rotate([0,45,0])
-					difference()
-					{
-						cube([30,8,30],center=true);
-						cube([24,20,24],center=true);
-					}
-			translate([15*sqrt(2)-2,0,0])
+			union()
+			{
+				strut(p1=[-halfwidth,0,0], p2=[-10,0,stretch*halfwidth],  wide = 3, deep = 8);
+				strut(p1=[halfwidth,0,0], p2=[10,0,stretch*halfwidth],  wide = 3, deep = 8);
+				strut(p1=[-halfwidth,0,0], p2=[0,0,-stretch*halfwidth],  wide = 3, deep = 8);
+				strut(p1=[halfwidth,0,0], p2=[0,0,-stretch*halfwidth],  wide = 3, deep = 8);
+			}
+			translate([halfwidth,0,0])
 				cube([5,8,8],center=true);
 	
-			translate([-15*sqrt(2)+2,0,0])
+			translate([-halfwidth,0,0])
 				cube([5,8,8],center=true);
 
-			translate([0,0,stretch*(15*sqrt(2)-2)])
-				cube([20,20,5],center=true);
+			translate([0,-6,stretch*halfwidth])
+			{
+				difference()
+				{
+					cube([25,20,5],center=true);
+					for(a = [1, -1])
+					for(b = [1, -1])
+					translate([a*clamp_holes/2,b*clamp_holes/2,-5*rodsize])
+							rotate([0,0,90])
+								teardrop(r=screwsize/2, h= rodsize*10, truncateMM=-1);
+
+				}
+			}
 	
-			translate([0,0,stretch*(-15*sqrt(2)+2)])
-				cube([20,20,5],center=true);
+			translate([0,0,-stretch*halfwidth])
+				cube([10,8,5],center=true);
 		}
-		translate([-50,0,0])
-			rotate([90,0,0])
-				rotate([0,90,0])
+		rotate([90,0,0])
+			rotate([0,90,0])
+			{
+				translate([0,0,-50])
 					teardrop(r=screwsize/2,h=100,truncateMM=-1);
+				translate([0,0,halfwidth+20])
+					pentanut(height=10);
+			}
 	}
 }
 
 x_axis_z_nut_holder();
 
-translate([0,25,0])
+translate([0,20,-stretch*halfwidth-15])
 z_height_adjuster();

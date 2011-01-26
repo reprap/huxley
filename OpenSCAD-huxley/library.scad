@@ -13,13 +13,31 @@ function op(v1 = [0,0,0], v2 = [0,0,0]) = [v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1
   coordinate planes, which means that one coordinate of the two endpoints must be the same.
 */
 
-module strut_block(da, db, wide, deep, round=true)
+module strut_block(da, db, wide, deep, round=1)
 {
-	translate([-wide/2,-deep/2,0])
-		cube([wide, deep, sqrt(da*da + db*db)]);
+	union()
+	{
+		translate([-wide/2,-deep/2,0])
+			cube([wide, deep, sqrt(da*da + db*db)]);
+		if(round == 1)
+		{
+			rotate([90,0,0])
+					cylinder(r=wide/2, h=deep,center=true,$fn=20);
+			translate([0,0,sqrt(da*da + db*db)])
+				rotate([90,0,0])
+					cylinder(r=wide/2, h=deep,center=true,$fn=20);
+		} else if(round == 2)
+		{
+			rotate([0,90,0])
+					cylinder(r=deep/2, h=wide,center=true,$fn=20);
+			translate([0,0,sqrt(da*da + db*db)])
+				rotate([0,90,0])
+					cylinder(r=deep/2, h=wide,center=true,$fn=20);
+		}
+	}
 }
 
-module strut(p1=[0,0,0], p2=[0,0,1], wide = 10, deep = 5, round=true)
+module strut(p1=[0,0,0], p2=[0,0,1], wide = 10, deep = 5, round=1)
 {
 	if(abs(p1.x - p2.x) < 0.00001)
 	{
@@ -27,7 +45,7 @@ module strut(p1=[0,0,0], p2=[0,0,1], wide = 10, deep = 5, round=true)
 			rotate([atan2(p2.z - p1.z, p2.y - p1.y), 0, 0])
 				rotate([-90,0,0])
 					rotate([0,0,90])
-						strut_block(p2.y - p1.y, p2.z - p1.z, wide, deep);
+						strut_block(p2.y - p1.y, p2.z - p1.z, wide, deep, round);
 	} else if(abs(p1.y - p2.y) < 0.00001)
 	{
 		translate(p1)
@@ -38,7 +56,7 @@ module strut(p1=[0,0,0], p2=[0,0,1], wide = 10, deep = 5, round=true)
 		translate(p1)
 			rotate([0,0,atan2(p2.y - p1.y, p2.x - p1.x)])
 				rotate([0,90,0])
-					strut_block(p2.x - p1.x, p2.y - p1.y, wide, deep);
+					strut_block(p2.x - p1.x, p2.y - p1.y, wide, deep, round);
 	}
 }
 
@@ -297,4 +315,5 @@ module washer(position) render() translate ([0, 0, -position - washersize / 2]) 
 
 //nema14(body = true, counterbore = -1);
 
-//strut(p1=[20,10,20], p2=[20, 60, 40], wide=10, deep=5);
+
+strut(p1=[20,10,20], p2=[20, 60, 40], wide=10, deep=5, round=2);

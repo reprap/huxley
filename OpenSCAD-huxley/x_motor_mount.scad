@@ -49,36 +49,61 @@ module oriented_teardrop()
 
 module bearing_plate()
 {
-	difference()
+	union()
 	{
-
-		translate([-bearing_plate_width/2, bearing_plate_overlap - thickness, -thickness])
+		difference()
 		{
-			difference()
+	
+			translate([-bearing_plate_width/2, bearing_plate_overlap - thickness, -thickness])
 			{
-				cube([bearing_plate_width, thickness + bearing_plate_support, 
-					bearing_low_z + bearing_z_gap + hole_land + thickness]);
-				translate([thickness, thickness, - 5])
-					cube([bearing_plate_width - 2*thickness, 2*thickness + bearing_plate_support, 
-						bearing_low_z + bearing_z_gap + hole_land + thickness + 10]);
+				difference()
+				{
+					cube([bearing_plate_width, thickness + bearing_plate_support, 
+						bearing_low_z + bearing_z_gap + hole_land + thickness]);
+					translate([thickness, thickness, - 5])
+						cube([bearing_plate_width - 2*thickness, 2*thickness + bearing_plate_support, 
+							bearing_low_z + bearing_z_gap + hole_land + thickness + 10]);
+				}
 			}
+
+			// Bearing mount holes
+	
+			for ( y = [0:1] )
+			for ( x = [0:1] ) 
+			{
+				translate([(x-0.5)*bearing_mount_centres, 0, bearing_low_z + y*bearing_z_gap])
+					oriented_teardrop();
+			}
+	
+			// Limit switch mounting holes
+	
+			translate([-40,4,12])
+				rotate([0,90,0])
+					teardrop(r=limit_switch_hole_diameter/2, h=40, truncateMM=-1);
+			translate([-40,4,12+limit_switch_centres])
+				rotate([0,90,0])
+					teardrop(r=limit_switch_hole_diameter/2, h=40, truncateMM=-1);
 		}
 
-		for ( y = [0:1] )
-		for ( x = [0:1] ) 
-		{
-			translate([(x-0.5)*bearing_mount_centres, 0, bearing_low_z + y*bearing_z_gap])
-				oriented_teardrop();
-		}
+		// Shim support ledges
 
-		// Limit switch mounting holes
+		translate([-bearing_mount_centres/2, -0.8*thickness, bearing_low_z + bearing_z_gap-1.5*thickness-1.5])
+			intersection()
+			{
+				rotate([35,0,0])
+					cube([bearing_mount_centres, thickness, thickness]);
+				translate([-thickness/5, -thickness*3/5, -thickness*6/5])
+					cube([2*bearing_mount_centres, 2*thickness, 2*thickness]);
+			}
 
-		translate([-40,4,12])
-			rotate([0,90,0])
-				teardrop(r=limit_switch_hole_diameter/2, h=40, truncateMM=-1);
-		translate([-40,4,12+limit_switch_centres])
-			rotate([0,90,0])
-				teardrop(r=limit_switch_hole_diameter/2, h=40, truncateMM=-1);
+		translate([-bearing_mount_centres/2, -0.8*thickness, bearing_low_z -1.5*thickness-1.5])
+			intersection()
+			{
+				rotate([35,0,0])
+					cube([bearing_mount_centres, thickness, thickness]);
+				translate([-thickness/5, -thickness*3/5, -thickness*6/5])
+					cube([2*bearing_mount_centres, 2*thickness, 2*thickness]);
+			}
 	}
 }
 

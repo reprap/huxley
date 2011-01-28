@@ -30,7 +30,7 @@ module x_axis_z_nut_holder()
 	}
 }
 
-stretch=1.2;
+stretch=1;
 halfwidth=12;
 
 module z_height_adjuster()
@@ -39,24 +39,14 @@ module z_height_adjuster()
 	{
 		union()
 		{
-			union()
-			{
-				strut(p1=[-halfwidth,0,0], p2=[-13,0,stretch*halfwidth],  wide = 2.5, deep = 8, round = true);
-				strut(p1=[halfwidth,0,0], p2=[13,0,stretch*halfwidth],  wide = 2.5, deep = 8, round = true);
-				strut(p1=[-halfwidth,0,0], p2=[0,0,-stretch*halfwidth],  wide = 2.5, deep = 8, round = false);
-				strut(p1=[halfwidth,0,0], p2=[0,0,-stretch*halfwidth],  wide = 2.5, deep = 8, round = false);
-			}
-			translate([halfwidth,0,0])
-				cube([5,8,8],center=true);
-	
-			translate([-halfwidth,0,0])
-				cube([5,8,8],center=true);
 
-			translate([0,-6,stretch*halfwidth])
+			// Attachment plate
+
+			translate([0,-halfwidth/2,2*stretch*halfwidth])
 			{
 				difference()
 				{
-					cube([27,20,5],center=true);
+					cube([20,20,5],center=true);
 					for(a = [1, -1])
 					for(b = [1, -1])
 					translate([a*clamp_holes/2,b*clamp_holes/2,-5*rodsize])
@@ -65,22 +55,51 @@ module z_height_adjuster()
 
 				}
 			}
+
+			// Vertical stalk
+
+			strut(p1=[0,0,stretch*halfwidth], p2=[0,0,1.9*stretch*halfwidth],  wide = 8, deep = 6, round = 2);
+
+			// Angled legs
+
+			union()
+			{
+				strut(p1=[-halfwidth,0,0], p2=[0,0,stretch*halfwidth],  wide = 2.5, deep = 8, round = 1);
+				strut(p1=[halfwidth,0,0], p2=[0,0,stretch*halfwidth],  wide = 2.5, deep = 8, round = 1);
+				strut(p1=[-halfwidth,0,0], p2=[0,0,-stretch*halfwidth],  wide = 2.5, deep = 8, round = 0);
+				strut(p1=[halfwidth,0,0], p2=[0,0,-stretch*halfwidth],  wide = 2.5, deep = 8, round = 0);
+			}
+
+			// Screw landing blocks either side
+
+			translate([halfwidth,0,0])
+				cube([5,8,8],center=true);
 	
-			translate([0,0,-stretch*halfwidth])
-				cube([10,8,5],center=true);
+			translate([-halfwidth,0,0])
+				cube([5,8,8],center=true);
+
+
+			// Block that pushes the switch
+	
+			translate([0,-1,-stretch*halfwidth])
+				cube([10,10,5],center=true);
 		}
+
+		// Screw holes and nut retainer
+
 		rotate([90,0,0])
 			rotate([0,90,0])
 			{
 				translate([0,0,-50])
 					teardrop(r=screwsize/2,h=100,truncateMM=-1);
 				translate([0,0,halfwidth+20])
-					pentanut(height=10);
+					scale(v=[1.1,1.1,1])
+						pentanut(height=10);
 			}
 	}
 }
 
-x_axis_z_nut_holder();
+//x_axis_z_nut_holder();
 
-translate([0,20,-stretch*halfwidth-15])
+//translate([0,20,-stretch*halfwidth-15])
 z_height_adjuster();

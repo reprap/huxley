@@ -8,6 +8,64 @@ function ip(v1 = [0,0,0], v2 = [0,0,0]) = v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 function op(v1 = [0,0,0], v2 = [0,0,0]) = [v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x];
 
 
+// Adjustable slide bearings for 6mm diameter rods mounted using M3 cap screws 18 mm apart.
+
+// The profile for these should be CSG from the parameters, but at the moment it's a dxf.
+
+// Adrian Bowyer 18 December 2010
+
+//*****************************************************************************************************************
+
+// Make an extrusion from the appropriate profile
+
+module bearingProfile(b360=true)
+{
+	if(b360)
+		linear_extrude(file = str(fileroot, "bearing360.dxf"), layer = "0", height = bearing_width, 
+			center = true, convexity = 10, twist = 0, $fn=40);
+	else
+		linear_extrude(file = str(fileroot, "bearing180.dxf"), layer = "0", height = bearing_width, 
+			center = true, convexity = 10, twist = 0, $fn=40);
+}
+
+// The distance between the 3mm screw centres is 18 mm
+// Set mounts true to get mounting holes, false to get the bearing
+// Set b360 true for a 360 degree bearing, false for a 180 one.
+
+module adjustable_bearing(b360, mounts=false)
+{
+	translate([-13,-9,0]) // Centre the shaft on the z axis
+	{
+		if(mounts)
+		{
+			union()
+			{
+				translate([4, -10, 0])rotate(90, [0, 1, 0])
+					rotate(-90, [1, 0, 0])
+						cylinder(r=1.5, h=50, centre = true, $fn=10);
+				translate([22, -10, 0])rotate(90, [0, 1, 0])
+					rotate(-90, [1, 0, 0])
+						cylinder(r=1.5, h=50, centre = true, $fn=10);
+			}
+		}else
+		{
+			difference()
+			{
+		  		bearingProfile(b360);
+				translate([4, -10, 0])rotate(90, [0, 1, 0])
+					rotate(-90, [1, 0, 0])
+						teardrop(r=1.5, h=50, truncateMM=-1);
+				translate([22, -10, 0])rotate(90, [0, 1, 0])
+					rotate(-90, [1, 0, 0])
+						teardrop(r=1.5, h=50, truncateMM=-1);
+			}
+		}
+	}
+}
+
+
+
+
 /*
   This makes an angled strut in space between two points.  It is parallel to one of the
   coordinate planes, which means that one coordinate of the two endpoints must be the same.
@@ -97,16 +155,50 @@ module nema14(body = true, counterbore = -1)
 				for ( y = [0:1] )
 				{
 					translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, -20])
-						cylinder(r = screwsize/2, h = 50, center = true, $fn=10);
+						cylinder(r = nema14_screw_r, h = 50, center = true, $fn=10);
 					if(counterbore >= 0)
 						translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, -25-counterbore])
-							cylinder(r = screwsize, h = 50, center = true, $fn=10);
+							cylinder(r = 2*nema14_screw_r, h = 50, center = true, $fn=10);
 				}
 			}
 		}
 	}
+}
 
+module nema11(body = true, counterbore = -1)
+{
+	color([1,0.4,0.4,1])
+	union()
+	{
+		if(body)
+		{
+			translate([0, 0, nema11_shaft_length/2 - nema11_shaft_projection - nema11_hub_depth])
+				cylinder(r = nema11_shaft/2, h = nema11_shaft_length, center = true, $fn=20);
+			translate([0, 0, -nema11_hub_depth])
+				cylinder(r = nema11_hub/2, h = nema11_hub_depth*2, center = true, $fn=20);
+	
+			translate([0, 0, nema11_length/2])
+				cube([nema11_square,nema11_square,nema11_length], center = true);
+		} else
+			translate([0, 0, -20])
+				cylinder(r = nema11_hub/2 + 1, h = 50, center = true, $fn=20);
 
+		if(!body)
+		{
+			union()
+			{
+				for ( x = [0:1] ) 
+				for ( y = [0:1] )
+				{
+					translate([(x-0.5)*nema11_screws, (y-0.5)*nema11_screws, -20])
+						cylinder(r = nema11_screw_r, h = 50, center = true, $fn=10);
+					if(counterbore >= 0)
+						translate([(x-0.5)*nema11_screws, (y-0.5)*nema11_screws, -25-counterbore])
+							cylinder(r = 2*nema11_screw_r, h = 50, center = true, $fn=10);
+				}
+			}
+		}
+	}
 }
 
 
@@ -296,6 +388,41 @@ module washer(position) render() translate ([0, 0, -position - washersize / 2]) 
 }
 
 
+module tooth_gap(height = 10, number_of_teeth = 11, inner_radius = 10, dr = 3,  angle=7)
+{
+	linear_extrude(height = 2*height, center = true, convexity = 10, twist = 0)
+		polygon( points = [
+			[pi*inner_radius/(2*number_of_teeth), 0],
+			[-pi*inner_radius/(2*number_of_teeth), 0],
+			[-2*dr *sin(angle) - pi*inner_radius/(2*number_of_teeth), 2*dr],
+			[2*dr *sin(angle) + pi*inner_radius/(2*number_of_teeth), 2*dr],
+		], convexity = 3);
+}
+
+
+
+module gear(height = 10, number_of_teeth = 11, inner_radius = 10, outer_radius = 12, angle=15)
+{
+	difference()
+	{
+		cylinder(h = height, r = outer_radius, centre = true);
+		for(i = [0:number_of_teeth])
+		{
+		rotate([0, 0, i*360/number_of_teeth])
+			translate([0, inner_radius, 0])
+				tooth_gap(height = height, number_of_teeth = number_of_teeth, inner_radius = inner_radius, 
+					dr =  outer_radius - inner_radius,  angle=angle);
+		}
+	}
+}
+
+
+
+
+//gear();
+
+
+
 //rod(20);
 //translate([rodsize * 2.5, 0, 0]) rod(20, true);
 //translate([rodsize * 5, 0, 0]) screw(10, true);
@@ -313,7 +440,10 @@ module washer(position) render() translate ([0, 0, -position - washersize / 2]) 
 
 //pentanut();
 
-//nema14(body = true, counterbore = -1);
+//nema14(body = false, counterbore = 8);
+
+//nema11(body = false, counterbore = 8);
+//strut(p1=[20,10,20], p2=[20, 60, 40], wide=10, deep=5, round=2);
 
 
-strut(p1=[20,10,20], p2=[20, 60, 40], wide=10, deep=5, round=2);
+adjustable_bearing(true, false);

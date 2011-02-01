@@ -6,21 +6,36 @@ ylength=86;
 d=22;
 w=5;
 
-difference()
-{
-	union()
-	{
-		strut(p1=[0,-ylength/2,0], p2=[0,ylength/2 , 0], wide=w, deep=d, round=2);
-		strut(p1=[0,-ylength/2,0], p2=[xbars, 0, 0], wide=w, deep=d, round=2);
-		strut(p1=[0,ylength/2,0], p2=[xbars,0 , 0], wide=w, deep=d, round=2);
-		translate([0,0,-w])
-		{
-			strut(p1=[0,-ylength/2,0], p2=[0,ylength/2 , 0], wide=2*w + 1, deep=w, round=2);
-			strut(p1=[0,-ylength/2,0], p2=[xbars, 0, 0], wide=2*w + 1, deep=w, round=2);
-			strut(p1=[0,ylength/2,0], p2=[xbars,0 , 0], wide=2*w + 1, deep=w, round=2);
-		}
-	
-	}
+// Triangle values
 
-	translate([])
-		cylinder(r=screwsize/2,h=2*d, center=true
+yl2 = ylength/2;
+a = (yl2*yl2 + xbars*xbars)/(2*xbars);
+b = xbars - a;
+theta = atan(xbars/yl2);
+
+
+module accesories(holes=false)
+{
+	for(i=[-1,1])
+		translate([0,i*yl2,0])
+			rotate([-90,180,180])
+				adjustable_bearing(true,holes);
+	
+	translate([xbars,0,0])
+		rotate([-90,180,0])
+			adjustable_bearing(false,holes);
+	if(!holes)
+	{
+		rotate([90,0,0])
+			rod(1.5*ylength,false);
+		
+		translate([xbars,0,0])
+			rotate([90,0,0])
+				rod(1.5*ylength,false);
+	}
+}
+
+accesories(false);
+
+translate([-13, -yl2-10,-14])
+cube([xbars+26, ylength+20, 5]);

@@ -50,12 +50,25 @@ vertex_gap = 2*vertex_radius*cos(vertex_ang);
 
 nema14_square=35.3;
 nema14_screws=26;
+nema14_screw_r=1.5;
 nema14_hub=22;
 nema14_hub_depth=2;
 nema14_length=36;
 nema14_shaft=5;
 nema14_shaft_length=66;
 nema14_shaft_projection=19;
+
+// Nema 11 dimensions - these are absolute
+
+nema11_square=28.5;
+nema11_screws=23;
+nema11_screw_r=1.25;
+nema11_hub=22;
+nema11_hub_depth=2;
+nema11_length=44.5;
+nema11_shaft=5;
+nema11_shaft_length=78;
+nema11_shaft_projection=18;
 
 // Limit switch parameters
 

@@ -310,7 +310,7 @@ module hat_cube(size = [1,1,1], center = false)
 
 
 
-module rod(length, threaded) if (threaded && renderrodthreads) {
+module rod(length, threaded=false) if (threaded && renderrodthreads) {
 	linear_extrude(height = length, center = true, convexity = 10, twist = -360 * length / rodpitch, $fn = fn)
 		translate([rodsize * 0.1 / 2, 0, 0])
 			circle(r = rodsize * 0.9 / 2, $fn = fn);
@@ -416,8 +416,31 @@ module gear(height = 10, number_of_teeth = 11, inner_radius = 10, outer_radius =
 	}
 }
 
+module grub_gear(base_height=7.5, height =13, number_of_teeth = 8, inner_radius = 4.5, outer_radius = 6.5, angle=40)
+{
+	difference()
+	{
+		union()
+		{
+			translate([0,0,0])
+				gear(height =height, number_of_teeth = number_of_teeth, inner_radius = inner_radius, 
+					outer_radius = outer_radius, angle=angle);
+			translate([0,0,-base_height/2])
+				cylinder(h = base_height, r = outer_radius+1,center=true,$fn=20);
+		}
+		
+		cylinder(h = 30, r = 2.5,center=true,$fn=20);
+		
+		translate([4.75,0,-6])
+			hat_cube([2.7,5.5,10], center=true);
+		translate([0,0,-3.75])
+			rotate([0,90,0])
+				teardrop(h = 20, r = 1.5,truncateMM=0.5);
+	}
+}
 
 
+grub_gear();
 
 //gear();
 
@@ -446,4 +469,4 @@ module gear(height = 10, number_of_teeth = 11, inner_radius = 10, outer_radius =
 //strut(p1=[20,10,20], p2=[20, 60, 40], wide=10, deep=5, round=2);
 
 
-adjustable_bearing(true, false);
+//adjustable_bearing(true, false);

@@ -129,7 +129,7 @@ module strut(p1=[0,0,0], p2=[0,0,1], wide = 10, deep = 5, round=1)
 
 */
 
-module nema14(body = true, counterbore = -1)
+module nema14(body = true, slots = -1, counterbore = -1)
 {
 	color([1,0.4,0.4,1])
 	union()
@@ -151,21 +151,27 @@ module nema14(body = true, counterbore = -1)
 		{
 			union()
 			{
-				for ( x = [0:1] ) 
-				for ( y = [0:1] )
+				for ( x = [-0.5, 0.5] ) 
+				for ( y = [-0.5, 0.5] )
 				{
-					translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, -20])
-						cylinder(r = nema14_screw_r, h = 50, center = true, $fn=10);
+					translate([x*nema14_screws, y*nema14_screws, -20])
+						if(slots <= 0)
+							cylinder(r = nema14_screw_r, h = 50, center = true, $fn=10);
+						else
+							cube([slots, nema14_screw_r*2, 50], center=true);
 					if(counterbore >= 0)
-						translate([(x-0.5)*nema14_screws, (y-0.5)*nema14_screws, -25-counterbore])
-							cylinder(r = 2*nema14_screw_r, h = 50, center = true, $fn=10);
+						translate([x*nema14_screws, y*nema14_screws, -25-counterbore])
+							if(slots <= 0)
+								cylinder(r = 2*nema14_screw_r, h = 50, center = true, $fn=10);
+							else
+								cube([slots+2*nema14_screw_r, nema14_screw_r*4,  50], center=true);
 				}
 			}
 		}
 	}
 }
 
-module nema11(body = true, counterbore = -1)
+module nema11(body = true, slots = -1, counterbore = -1)
 {
 	color([1,0.4,0.4,1])
 	union()
@@ -187,14 +193,20 @@ module nema11(body = true, counterbore = -1)
 		{
 			union()
 			{
-				for ( x = [0:1] ) 
-				for ( y = [0:1] )
+				for ( x = [-0.5, 0.5] ) 
+				for ( y = [-0.5, 0.5] )
 				{
-					translate([(x-0.5)*nema11_screws, (y-0.5)*nema11_screws, -20])
-						cylinder(r = nema11_screw_r, h = 50, center = true, $fn=10);
+					translate([x*nema11_screws, y*nema11_screws, -20])
+						if(slots <= 0)
+							cylinder(r = nema11_screw_r, h = 50, center = true, $fn=10);
+						else
+							cube([slots, nema11_screw_r*2, 50], center=true);
 					if(counterbore >= 0)
-						translate([(x-0.5)*nema11_screws, (y-0.5)*nema11_screws, -25-counterbore])
-							cylinder(r = 2*nema11_screw_r, h = 50, center = true, $fn=10);
+						translate([x*nema11_screws, y*nema11_screws, -25-counterbore])
+							if(slots <= 0)
+								cylinder(r = 2*nema11_screw_r, h = 50, center = true, $fn=10);
+							else
+								cube([slots+2*nema11_screw_r, nema11_screw_r*4,  50], center=true);
 				}
 			}
 		}
@@ -416,7 +428,7 @@ module gear(height = 10, number_of_teeth = 11, inner_radius = 10, outer_radius =
 	}
 }
 
-module grub_gear(base_height=7.5, height =13, number_of_teeth = 8, inner_radius = 4.5, outer_radius = 6.5, angle=40)
+module grub_gear(hub_height=7.5, hub_radius = 9.5, shaft_radius = 2.5, height =13, number_of_teeth = 8, inner_radius = 4.5, outer_radius = 6.5, angle=40)
 {
 	difference()
 	{
@@ -425,17 +437,17 @@ module grub_gear(base_height=7.5, height =13, number_of_teeth = 8, inner_radius 
 			translate([0,0,0])
 				gear(height =height, number_of_teeth = number_of_teeth, inner_radius = inner_radius, 
 					outer_radius = outer_radius, angle=angle);
-			translate([0,0,-base_height/2])
-				cylinder(h = base_height, r = outer_radius+1,center=true,$fn=20);
+			translate([0,0,-hub_height/2])
+				cylinder(h = hub_height, r = hub_radius,center=true,$fn=20);
 		}
 		
-		cylinder(h = 30, r = 2.5,center=true,$fn=20);
+		cylinder(h = 30, r = shaft_radius, center=true,$fn=20);
 		
-		translate([4.75,0,-6])
+		translate([shaft_radius + 2, 0, -6])
 			hat_cube([2.7,5.5,10], center=true);
 		translate([0,0,-3.75])
 			rotate([0,90,0])
-				teardrop(h = 20, r = 1.5,truncateMM=0.5);
+				teardrop(h = 2*hub_radius, r = screwsize/2,truncateMM=0.5);
 	}
 }
 

@@ -4,7 +4,6 @@
 // Adrian Bowyer 18 December 2010
 
 include <parameters.scad>;
-include <nema14_motor.scad>;
 use<library.scad>
 
 // Rewrite some values
@@ -83,15 +82,15 @@ module cylindrical_z_holes()
 	union()
 	{
 		translate([-bar_clamp_x_gap, bar_clamp_y, 0])
-			cylinder(r = screw_hole_r, h = 30, center = true, $fn=10);
+			cylinder(r = screw_hole_r, h = 60, center = true, $fn=10);
 		translate([0, bar_clamp_y, 0])
-			cylinder(r = screw_hole_r, h = 30, center = true, $fn=10);
+			cylinder(r = screw_hole_r, h = 60, center = true, $fn=10);
 		translate([bar_clamp_x_gap, bar_clamp_y, 0])
-			cylinder(r = screw_hole_r, h = 30, center = true, $fn=10);
+			cylinder(r = screw_hole_r, h = 60, center = true, $fn=10);
 		translate([-bearing_x, bearing_y, 0])
-			cylinder(r = screw_hole_r, h = 30, center = true, $fn=10);
+			cylinder(r = screw_hole_r, h = 60, center = true, $fn=10);
 		translate([bearing_x, bearing_y, 0])
-			cylinder(r = screw_hole_r, h = 30, center = true, $fn=10);
+			cylinder(r = screw_hole_r, h = 60, center = true, $fn=10);
 
 
 	}
@@ -110,9 +109,35 @@ module x_motor_mount()
 	}
 }
 
+module bar_clamp()
+{
+	difference()
+	{
+		translate([0, bar_clamp_y, -21])
+			union()
+			{
+				cube([2*bar_clamp_x_gap,10,8], center=true);
+				translate([-bar_clamp_x_gap, 0, 0])
+					cylinder(r = 5, h = 8, center = true, $fn=20);
+				translate([bar_clamp_x_gap, 0, 0])
+					cylinder(r = 5, h = 8, center = true, $fn=20);
+			}
+
+		for(i=[-1,1])
+		translate([i*x_bar_gap/2,0,-20])
+			rotate([0,90,90])
+			{
+				rod(rodsize*10);
+				translate([-rodsize, 0, 0])
+				cube([2*rodsize, rodsize, rodsize*10], center=true);
+			}
+
+		cylindrical_z_holes();
+	}
+
+}
+
+ bar_clamp();
 
 x_motor_mount();
 
-//translate([0, motor_center_y, thickness])
-//	rotate(a = 45, v = [0, 0, 1])
-//		nema14();

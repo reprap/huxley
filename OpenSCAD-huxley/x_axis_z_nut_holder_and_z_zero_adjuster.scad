@@ -99,7 +99,7 @@ module z_height_adjuster()
 	}
 }
 
-//x_axis_z_nut_holder();
+x_axis_z_nut_holder();
 
 //translate([0,20,-stretch*halfwidth-15])
-z_height_adjuster();
+//z_height_adjuster();

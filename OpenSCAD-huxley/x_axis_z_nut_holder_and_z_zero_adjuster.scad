@@ -21,12 +21,17 @@ module x_axis_z_nut_holder()
 				cylinder(r=rodsize/2, h= rodsize*10, center=true);
 
 		for(a = [1, -1])
-		for(b = [1, -1])
-		for(c = [1, -1])
-		translate([a*clamp_holes/2,b*x_bar_gap/2+c*clamp_holes/2,0])
-				cylinder(r=screwsize/2, h= rodsize*10, center=true, $fn=15);
-		translate([0,0,7/2])
-			rodnut(position=0,washer=0);
+		{
+			translate([0,a*(x_bar_gap/2-clamp_holes/2),0])
+					cylinder(r=screwsize/2, h= rodsize*10, center=true, $fn=15);
+			for(b = [1, -1])
+			for(c = [1, -1])
+			translate([a*clamp_holes/2,b*x_bar_gap/2+c*clamp_holes/2,0])
+					cylinder(r=screwsize/2, h= rodsize*10, center=true, $fn=15);
+		}
+		translate([0,0,7/2-0.2])
+			cylinder(r=rodsize, h= 5, center=true, $fn=6);
+			//rodnut(position=0,washer=0);
 	}
 }
 
@@ -47,12 +52,18 @@ module z_height_adjuster()
 				difference()
 				{
 					cube([20,20,5],center=true);
-					for(a = [1, -1])
-					for(b = [1, -1])
-					translate([a*clamp_holes/2,b*clamp_holes/2,-5*rodsize])
-							rotate([0,0,90])
-								teardrop(r=screwsize/2, h= rodsize*10, truncateMM=-1);
 
+					//translate([0,a*(x_bar_gap/2-clamp_holes/2),0])
+						//rotate([0,0,90])
+							//teardrop(r=screwsize/2, h= rodsize*10,  truncateMM=-1);
+					for(a = [1, -1])
+					{
+
+						for(b = [1, -1])
+						translate([a*clamp_holes/2,b*clamp_holes/2,-5*rodsize])
+								rotate([0,0,90])
+									teardrop(r=screwsize/2, h= rodsize*10, truncateMM=-1);
+					}
 				}
 			}
 
@@ -101,5 +112,5 @@ module z_height_adjuster()
 
 x_axis_z_nut_holder();
 
-//translate([0,20,-stretch*halfwidth-15])
-//z_height_adjuster();
+translate([0,20,-stretch*halfwidth-15])
+z_height_adjuster();

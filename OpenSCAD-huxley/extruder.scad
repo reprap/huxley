@@ -79,8 +79,13 @@ module m6_shaft(body=true)
 difference()
 {
 
-translate([-15, 30,-30])
-	cube([30, 60, 60], center=true);
+translate([nema11_square/2, 0,nema11_square/2])
+	mirror([1,0,1])
+		cube([50, 60, 60]);
+
+
+translate([0, 15+40,nema11_square*0.1])
+	cube([nema11_square*1.2, 80, nema11_square*1.2], center=true);
 
 translate([-30, 30,-15])
 	cube([30, 80, 30], center=true);
@@ -92,6 +97,11 @@ rotate([0,-60,0])
 
 translate([-42+32*cos(-60),30,32*sin(-60)])
 	idler(body=false);
+
+translate([0, 11.5,0])
+	rotate([-90,0,0])
+  		nema11(body=false, slots = 5, counterbore=8);
+
 
 }
 

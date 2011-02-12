@@ -421,7 +421,7 @@ module gear(height = 10, number_of_teeth = 11, inner_radius = 10, outer_radius =
 		for(i = [0:number_of_teeth])
 		{
 		rotate([0, 0, i*360/number_of_teeth])
-			translate([0, inner_radius, 0])
+			translate([0, inner_radius, 0.5*height])
 				tooth_gap(height = height, number_of_teeth = number_of_teeth, inner_radius = inner_radius, 
 					dr =  outer_radius - inner_radius,  angle=angle);
 		}

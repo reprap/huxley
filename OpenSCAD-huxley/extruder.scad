@@ -11,6 +11,11 @@ module accessories()
 				rotate([0,90,0])
 					rod(100);
 
+			// Mendel centres
+
+			translate([3, i*25 , 0])
+				cylinder(h=40,r=2,center=true, $fn=15);
+
 			translate([0, i*40 , 0])
 				cube([100,2,6], center=true);
 

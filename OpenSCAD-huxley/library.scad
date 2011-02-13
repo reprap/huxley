@@ -447,7 +447,11 @@ module grub_gear(hub_height=7.5, hub_radius = 9.5, shaft_radius = 2.5, height =1
 			hat_cube([2.7,5.5,10], center=true);
 		translate([0,0,-3.75])
 			rotate([0,90,0])
-				teardrop(h = 2*hub_radius, r = screwsize/2,truncateMM=0.5);
+				if(hub_radius >= outer_radius)
+					teardrop(h = 2*hub_radius, r = screwsize/2,truncateMM=0.5);
+				else
+					rotate([0,0,180])
+						teardrop(h = 2*hub_radius, r = screwsize/2,truncateMM=0.5);
 	}
 }
 

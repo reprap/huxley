@@ -1,33 +1,41 @@
 include <parameters.scad>;
 use <library.scad>;
 
-module accessories()
+module accessories(holes=false)
 {
 	translate([-3,15,-62])
 	{
 		for(i=[-1,1])
 		{
+			if(!holes)
 			translate([0, i*x_bar_gap/2 , 0])
 				rotate([0,90,0])
 					rod(100);
 
 			// Mendel centres
-
-			translate([3, i*25 , 0])
+			if(holes)
+			translate([12, i*25-4 , 0])
 				cylinder(h=40,r=2,center=true, $fn=15);
 
+			if(!holes)
 			translate([0, i*40 , 0])
 				cube([100,2,6], center=true);
 
 	
-			translate([-10+i*25, x_bar_gap/2, 0])
+			translate([-13+i*20, x_bar_gap/2, 0])
 				rotate([-90,180,90])
-					adjustable_bearing(true,false);
+					if(holes)
+						adjustable_bearing(true,90);
+					else
+						adjustable_bearing(true,-1);
 		}
 
-		translate([7, -x_bar_gap/2 + 3, 0])
+		translate([15, -x_bar_gap/2 + 3, 0])
 			rotate([-90,180,-90])
-				adjustable_bearing(false,false);
+				if(holes)
+					adjustable_bearing(false,90);
+				else
+					adjustable_bearing(false,-1);
 
 	}
 
@@ -191,8 +199,14 @@ module nozzle_block(body=true)
 		{
 			union()
 			{
-				translate([7,0,-20])
-					cube([29,16,10], center = true);
+				translate([13,0,-20])
+				difference()
+				{
+					cube([59,16,10], center = true);
+					for(i=[-1,1])
+						translate([i*(59/2-15/2), 0, 5])
+							cube([16,20,10], center = true);
+				}
 				translate([7,0,-14])
 					cube([10,16,10], center = true);
 			}
@@ -274,8 +288,14 @@ module motor_plate()
 	difference()
 	{
 		translate([nema11_square/2+2-50, 0,nema11_square/2+2-69])
+			union()
+			{
 				cube([50, 8, 69]);
+				translate([38,-20,0])
+					cube([12, 20, 5]);
+			}
 		plate_holes();
+		accessories(holes=true);
 	}
 }
 
@@ -284,8 +304,16 @@ module back_plate()
 	difference()
 	{	
 		translate([-(50-nema11_square/2-2), 24,nema11_square/2 + 2 -  69])
+			union()
+			{
 				cube([50-nema11_square/2, 8, 69-nema11_square - 4]);
+				translate([30,0,0])
+					cube([20, 20, 5]);
+				translate([-8,0,0])
+					cube([14, 20, 5]);
+			}
 		plate_holes();
+		accessories(holes=true);
 	}
 }
 
@@ -304,10 +332,15 @@ translate([-42+32*cos(-60),16,32*sin(-60)])
 	idler(body=true);
 
 translate([-42+32*cos(-60),16,32*sin(-60)])
-{
 	retaining_block(body=true);
+
+difference()
+{
+translate([-42+32*cos(-60),16,32*sin(-60)])
 	nozzle_block(body=true);
+accessories(holes=true);
 }
+
 
 rotate([90,0,0])
 	grub_gear(hub_height = 7, hub_radius = 9.5, shaft_radius = 2.5, height = 8, number_of_teeth = 11, 

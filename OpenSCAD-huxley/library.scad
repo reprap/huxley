@@ -29,23 +29,31 @@ module bearingProfile(b360=true)
 }
 
 // The distance between the 3mm screw centres is 18 mm
-// Set mounts true to get mounting holes, false to get the bearing
+// Set mounts negative to get the bearing, positive to define the teardrop angle, > 360 to get circular holes
 // Set b360 true for a 360 degree bearing, false for a 180 one.
 
-module adjustable_bearing(b360, mounts=false)
+module adjustable_bearing(b360=true, mounts=-1)
 {
 	translate([-13,-9,0]) // Centre the shaft on the z axis
 	{
-		if(mounts)
+		if(mounts>=0)
 		{
 			union()
 			{
 				translate([4, -10, 0])rotate(90, [0, 1, 0])
 					rotate(-90, [1, 0, 0])
-						cylinder(r=1.5, h=50, centre = true, $fn=10);
+						if(mounts > 360)
+							cylinder(r=1.5, h=50, centre = true, $fn=10);
+						else
+							rotate([0,0,mounts])
+								teardrop(r=1.5, h=50,  truncateMM=0.5);
 				translate([22, -10, 0])rotate(90, [0, 1, 0])
 					rotate(-90, [1, 0, 0])
-						cylinder(r=1.5, h=50, centre = true, $fn=10);
+						if(mounts > 360)
+							cylinder(r=1.5, h=50, centre = true, $fn=10);
+						else
+							rotate([0,0,mounts])
+								teardrop(r=1.5, h=50,  truncateMM=0.5);
 			}
 		}else
 		{
@@ -54,10 +62,10 @@ module adjustable_bearing(b360, mounts=false)
 		  		bearingProfile(b360);
 				translate([4, -10, 0])rotate(90, [0, 1, 0])
 					rotate(-90, [1, 0, 0])
-						teardrop(r=1.5, h=50, truncateMM=-1);
+						teardrop(r=1.5, h=50, truncateMM=0.5);
 				translate([22, -10, 0])rotate(90, [0, 1, 0])
 					rotate(-90, [1, 0, 0])
-						teardrop(r=1.5, h=50, truncateMM=-1);
+						teardrop(r=1.5, h=50, truncateMM=0.5);
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 include <parameters.scad>;
 use <library.scad>;
 
-module accessories(holes=false)
+module accessories(holes=false, angle=270)
 {
 	translate([-3,15,-62])
 	{
@@ -12,11 +12,6 @@ module accessories(holes=false)
 				rotate([0,90,0])
 					rod(100);
 
-			// Mendel centres
-			if(holes)
-			translate([12, i*25-4 , 0])
-				cylinder(h=40,r=2,center=true, $fn=15);
-
 			if(!holes)
 			translate([0, i*40 , 0])
 				cube([100,2,6], center=true);
@@ -25,15 +20,30 @@ module accessories(holes=false)
 			translate([-13+i*20, x_bar_gap/2, 0])
 				rotate([-90,180,90])
 					if(holes)
-						adjustable_bearing(true,90);
+						adjustable_bearing(true,angle);
 					else
 						adjustable_bearing(true,-1);
 		}
 
+		if(holes)
+		translate([14, 25-4 , 0])
+			rotate([0,0,angle])
+				teardrop(h=40,r=2,truncateMM=0.5);
+
+		if(holes)
+		translate([14, -25-4 , 0])
+			rotate([0,0,360-angle])
+				teardrop(h=40,r=2,truncateMM=0.5);
+
+		if(holes)
+		translate([14, 25-12 , 0])
+			rotate([0,0,angle])
+				teardrop(h=40,r=2,truncateMM=0.5);
+
 		translate([15, -x_bar_gap/2 + 3, 0])
 			rotate([-90,180,-90])
 				if(holes)
-					adjustable_bearing(false,90);
+					adjustable_bearing(false,360-angle);
 				else
 					adjustable_bearing(false,-1);
 
@@ -187,6 +197,8 @@ module nozzle_block_holes(teardrop=false, filament=true)
 							cylinder(h = 60, r = screwsize/2, center=true,$fn=10);
 							translate([0,0,23])
 								cylinder(h = 20, r = screwsize, center=true,$fn=10);
+							translate([0,0,-23])
+								cylinder(h = 20, r = screwsize, center=true,$fn=6);
 						}
 		}
 }
@@ -203,9 +215,10 @@ module nozzle_block(body=true)
 				difference()
 				{
 					cube([59,16,10], center = true);
-					for(i=[-1,1])
-						translate([i*(59/2-15/2), 0, 5])
-							cube([16,20,10], center = true);
+					translate([59/2-16/2, 0, 5])
+						cube([22,20,10], center = true);
+					translate([-59/2+8/2, 0, 5])
+						cube([13,20,10], center = true);
 				}
 				translate([7,0,-14])
 					cube([10,16,10], center = true);
@@ -271,6 +284,15 @@ module plate_holes()
 		{
 			retaining_block(body=false);
 			nozzle_block(body=false);
+			for(i=[-1,1])
+			for(j=[0,1])
+			translate([j*18,0,-34+i*6])
+				rotate([90,0,0])
+				{
+					cylinder(h=200,r=screwsize/2, center=true, $fn=10);
+					translate([0,0,-9])
+						cylinder(h=50,r=screwsize, center=true, $fn=6);
+				}
 		}
 
 		/*translate([-55,0,0])
@@ -295,7 +317,7 @@ module motor_plate()
 					cube([12, 20, 5]);
 			}
 		plate_holes();
-		accessories(holes=true);
+		accessories(holes=true, angle=90);
 	}
 }
 
@@ -310,12 +332,41 @@ module back_plate()
 				translate([30,0,0])
 					cube([20, 20, 5]);
 				translate([-8,0,0])
-					cube([14, 20, 5]);
+					cube([12, 20, 5]);
+				translate([17, 15, -1])
+				intersection()
+				{
+					difference()
+					{
+						cube([28, 30, 35],center=true);
+						difference()
+						{
+							translate([0,0,25])
+								rotate([-25,0,0])
+									cube([40, 60, 40],center=true);
+							translate([0,0,-20])
+									cube([42, 62, 42],center=true);
+						}
+				
+					}
+					union()
+					{
+						translate([0,0,15])
+								rotate([-25,0,0])
+									cube([40, 60, 40],center=true);
+							translate([0,20,5])
+									rotate([-45,0,0])
+										cube([42, 62, 42],center=true);
+					}
+
+				}
 			}
 		plate_holes();
-		accessories(holes=true);
+		accessories(holes=true, angle=270);
 	}
 }
+
+
 
 
 
@@ -338,7 +389,7 @@ difference()
 {
 translate([-42+32*cos(-60),16,32*sin(-60)])
 	nozzle_block(body=true);
-accessories(holes=true);
+accessories(holes=true, angle=90);
 }
 
 

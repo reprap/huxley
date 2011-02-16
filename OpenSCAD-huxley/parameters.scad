@@ -1,4 +1,7 @@
-// Parameters file for RepRap Huxley
+// Parameters file for RepRap Huxley (and maybe Mendel)
+
+huxley=true;
+mendel=!huxley;
 
 pi=3.14159265;
 

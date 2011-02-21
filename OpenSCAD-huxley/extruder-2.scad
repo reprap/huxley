@@ -85,26 +85,26 @@ module driven_gear(wingnut=false)
 	}
 }
 
-module m6_shaft(body=true)
+module m6_shaft(body=true, bearing_gap=28)
 {
-	translate([0,27.5,0])
+	translate([0,-17,0])
 	rotate([-90,0,0])
 	{
 		union()
 		{
+			translate([0,0,(bearing_gap+27)/2])
+				if(body)
+					rod(bearing_gap+27);
+				else
+					cylinder(h=bearing_gap+52,r=7.5,center=true);
 
-			if(body)
-				rod(55);
-			else
-				cylinder(h=80,r=7.5,center=true);
-
-			translate([0,0,22])
+			translate([0,0,bearing_gap+22])
 				if(body)
 					cylinder(h=6,r=9.5,center=true);
 				else
 					cylinder(h=6.2,r=10,center=true);
 
-			translate([0,0,-6])
+			translate([0,0,22])
 				if(body)
 					cylinder(h=6,r=9.5,center=true);
 				else
@@ -113,7 +113,10 @@ module m6_shaft(body=true)
 	}
 }
 
-driven_gear();
-translate([0,-17,0])
-m6_shaft();
-//accessories();
+
+translate([3,-20,35])
+{
+	m6_shaft(body=true, bearing_gap=28);
+	driven_gear(wingnut=true);
+}
+accessories();

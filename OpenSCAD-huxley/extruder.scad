@@ -15,30 +15,38 @@ module accessories(holes=false, angle=270)
 			if(!holes)
 			translate([0, i*40 , 0])
 				cube([100,2,6], center=true);
-
-	
-			translate([-13+i*20, x_bar_gap/2, 0])
-				rotate([-90,180,90])
-					if(holes)
-						adjustable_bearing(true,angle);
-					else
-						adjustable_bearing(true,-1);
 		}
+
+		translate([7, x_bar_gap/2, 0])
+			rotate([-90,180,90])
+				if(holes)
+					adjustable_bearing(true,angle);
+				else
+					adjustable_bearing(true,-1);
+		translate([-35, x_bar_gap/2, 0])
+			rotate([-90,180,90])
+				if(holes)
+					adjustable_bearing(true,angle);
+				else
+					adjustable_bearing(true,-1);
 
 		if(holes)
 		translate([14, 25-4 , 0])
 			rotate([0,0,angle])
-				teardrop(h=40,r=2,truncateMM=0.5);
+				if(huxley)
+					teardrop(h=40,r=screwsize/2,truncateMM=0.5);
+				else
+					teardrop(h=40,r=2,truncateMM=0.5);
 
-		if(holes)
+		if(holes && mendel)
 		translate([14, -25-4 , 0])
-			rotate([0,0,360-angle])
-				teardrop(h=40,r=2,truncateMM=0.5);
-
-		if(holes)
-		translate([14, 25-12 , 0])
 			rotate([0,0,angle])
 				teardrop(h=40,r=2,truncateMM=0.5);
+
+		if(holes && huxley)
+		translate([14, 25-12 , 0])
+			rotate([0,0,angle])
+					teardrop(h=40,r=screwsize/2,truncateMM=0.5);
 
 		translate([15, -x_bar_gap/2 + 3, 0])
 			rotate([-90,180,-90])
@@ -232,35 +240,64 @@ module nozzle_block(body=true)
 }
 
 
-module m6_shaft(body=true)
+module m6_shaft(body=true, gearonly = false)
 {
 	rotate([-90,0,0])
 	{
 		union()
 		{
-			if(body)
-				translate([0,0,-17])
-					rod(55);
-			else
-				cylinder(h=80,r=7.5,center=true);
 
-			translate([0,0,5])
-				if(body)
-					cylinder(h=6,r=9.5,center=true);
-				else
-					cylinder(h=6.2,r=10,center=true);
-
-			translate([0,0,-23])
-				if(body)
-					cylinder(h=6,r=9.5,center=true);
-				else
-					cylinder(h=6.2,r=10,center=true);
-
-			if(body)
+			if(gearonly || body)
 				translate([0,0,-33])
 					rotate([0,0,2])
-						grub_gear(hub_height = 10, hub_radius = 9.5, shaft_radius = 3, height = 7, 
-							number_of_teeth = 31, inner_radius = 22, outer_radius = 25, angle=15);
+						difference()
+						{
+							union()
+							{
+								grub_gear(hub_height = 10, hub_radius = 10, shaft_radius = 3, height = 7, 
+									number_of_teeth = 31, inner_radius = 22, outer_radius = 25, angle=15);
+								difference()
+								{
+									strut(p1=[0,-13,-5], p2=[0,13,-5], wide = 10, deep = 15, round=2);
+									cylinder(h=50,r=9, center=true,$fn=20);
+								}
+							}
+							intersection()
+							{
+								translate([0,18,-14])
+									rotate([-45,0,0])
+										cube([4, 26, 20], center=true);
+								cylinder(h=50,r=20, center=true,$fn=20);
+							}
+							intersection()
+							{
+								translate([0,-18,-14])
+									rotate([45,0,0])
+										cube([4, 26, 20], center=true);
+								cylinder(h=50,r=20, center=true,$fn=20);
+							}
+
+						}
+			if(!gearonly)
+			{
+				if(body)
+					translate([0,0,-17])
+						rod(55);
+				else
+					cylinder(h=80,r=7.5,center=true);
+	
+				translate([0,0,5])
+					if(body)
+						cylinder(h=6,r=9.5,center=true);
+					else
+						cylinder(h=6.2,r=10,center=true);
+	
+				translate([0,0,-23])
+					if(body)
+						cylinder(h=6,r=9.5,center=true);
+					else
+						cylinder(h=6.2,r=10,center=true);
+			}
 		}	
 	}
 }
@@ -271,7 +308,7 @@ module plate_holes()
 	{
 		rotate([0,-60,0])
 			translate([-32, 25,0])
-				m6_shaft(body=false);
+				m6_shaft(body=false,gearonly = false);
 		
 		translate([-42+32*cos(-60),16,32*sin(-60)])
 			idler(body=false);
@@ -333,32 +370,35 @@ module back_plate()
 					cube([20, 20, 5]);
 				translate([-8,0,0])
 					cube([12, 20, 5]);
-				translate([17, 15, -1])
-				intersection()
+				if(huxley)
 				{
-					difference()
+					translate([17, 15, -1])
+					intersection()
 					{
-						cube([28, 30, 35],center=true);
 						difference()
 						{
-							translate([0,0,25])
-								rotate([-25,0,0])
-									cube([40, 60, 40],center=true);
-							translate([0,0,-20])
-									cube([42, 62, 42],center=true);
-						}
-				
-					}
-					union()
-					{
-						translate([0,0,15])
-								rotate([-25,0,0])
-									cube([40, 60, 40],center=true);
-							translate([0,20,5])
-									rotate([-45,0,0])
+							cube([28, 30, 35],center=true);
+							difference()
+							{
+								translate([0,0,25])
+									rotate([-25,0,0])
+										cube([40, 60, 40],center=true);
+								translate([0,0,-20])
 										cube([42, 62, 42],center=true);
+							}
+					
+						}
+						union()
+						{
+							translate([0,0,15])
+									rotate([-25,0,0])
+										cube([40, 60, 40],center=true);
+								translate([0,20,5])
+										rotate([-45,0,0])
+											cube([42, 62, 42],center=true);
+						}
+	
 					}
-
 				}
 			}
 		plate_holes();
@@ -367,6 +407,17 @@ module back_plate()
 }
 
 
+module belt_clamp()
+{
+	difference()
+	{
+		translate([-(50-nema11_square/2-2), 24,nema11_square/2 + 2 -  69])
+			translate([26, 35, -9.5])
+				cube([7,7,18.5], center=true);
+		plate_holes();
+	}
+}
+
 
 
 
@@ -374,10 +425,11 @@ motor_plate();
 
 back_plate();
 
+belt_clamp();
 
 rotate([0,-60,0])
 	translate([-32, 25,0])
-		m6_shaft(body=true);
+		m6_shaft(body=true, gearonly=true);
 
 translate([-42+32*cos(-60),16,32*sin(-60)])
 	idler(body=true);

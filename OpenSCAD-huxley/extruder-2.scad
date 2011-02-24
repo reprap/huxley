@@ -5,7 +5,8 @@ motor_angle=-21.5;
 gear_mesh=7;
 clamp_centres=19;
 plate_thickness=5;
-filament_y_offset=-20;
+filament_y_offset=-27;
+bearing_gap=43;
 
 module accessories(holes=false, angle=270)
 {
@@ -67,18 +68,18 @@ module accessories(holes=false, angle=270)
 
 module idler_holes(screws=true, bearing=true)
 {
-	translate([1,0,0])
+	translate([-1,0,0])
 	union()
 	{
 		if(screws)
 		{
 			for(i=[-1,1])
 			for(j=[-1,1])
-			translate([0,i*6,j*7])
+			translate([0,i*11,j*7])
 				rotate([0,90,0])
 				{
 					cylinder(h=60,r=screwsize/2,center=true, $fn=10);
-					translate([0,0,30])
+					translate([0,0,28])
 						cylinder(h=20,r=nutsize,center=true, $fn=6);
 				}
 		}
@@ -88,18 +89,15 @@ module idler_holes(screws=true, bearing=true)
 			rotate([90,0,0])
 			{
 				translate([0,0,-15])
-					rotate([0,0,180])
-					{
-						teardrop(h=30,r=screwsize/2,truncateMM=0.5);
-						translate([0,0,-19])
-						{
-							teardrop(h=30,r=screwsize,truncateMM=0.5);
-							translate([0,0,61])
-								pentanut(height=20);
-						}
-					}
+				{
+					teardrop(h=30,r=screwsize/2,truncateMM=0.5);
+					translate([0,0,-27])
+						teardrop(h=30,r=screwsize,truncateMM=0.5);
+					translate([0,0,50])
+						pentanut(height=20);
+				}
 				cylinder(h=5,r=7,center=true, $fn=20);
-				translate([5,0,0])
+				translate([-5,0,0])
 					cube([10,14,5],center=true);
 			}
 		}
@@ -112,20 +110,23 @@ module idler_holes(screws=true, bearing=true)
 
 module idler(body=true)
 {
-	translate([-7,0,0])
+	translate([7,0,0])
 	if(body)
 	{
 		difference()
 		{
 			union()
 			{
-				translate([-2,0,0])
-					cube([12,20,22], center = true);
-				translate([1,0,12])
-					cube([18,10,5], center = true);
+				translate([2,0,0])
+					cube([12,30,22], center = true);
+				translate([-1,0,12])
+					cube([18,12,5], center = true);
 			}
+			translate([-11,0,-11])
+				rotate([0,60,0])
+					cube([20,40,20], center = true);
 			idler_holes();
-			translate([7,0,0])
+			translate([-7,0,0])
 				cylinder(h=100,r=1,center=true, $fn=15);
 		}
 	} else
@@ -181,7 +182,7 @@ module driven_gear(wingnut=false)
 	}
 }
 
-module m6_shaft(body=true, bearing_gap=28)
+module m6_shaft(body=true)
 {
 	translate([0,-17,0])
 	rotate([-90,0,0])
@@ -211,11 +212,11 @@ module m6_shaft(body=true, bearing_gap=28)
 
 module drive_assembly()
 {
-	m6_shaft(body=true, bearing_gap=28);
+	m6_shaft(body=true);
 	driven_gear(wingnut=true);
 	translate([-32*cos(motor_angle), 1, 32*sin(motor_angle)])
 		drive_gear_and_motor();
-	translate([-5-4, -filament_y_offset, 0])
+	translate([5+4, -filament_y_offset, 0])
 		rotate([90,0,0])
 			cylinder(h=4, r=5, center=true, $fn=20);
 
@@ -231,11 +232,15 @@ module base_plate()
 	}
 }
 
-idler();
 
-/*translate([3,filament_y_offset,31])
+
+translate([-3,filament_y_offset,31])
 	drive_assembly();
+
+translate([0,0,31])
+	idler();
+
 
 base_plate();
 
-accessories();*/
+accessories();

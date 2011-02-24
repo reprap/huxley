@@ -226,6 +226,7 @@ module nema11(body = true, slots = -1, counterbore = -1)
 
 module pentanut(height=40)
 {
+	scale([1.1, 1.1, 1.1])
 	rotate([0,0,60])
 	intersection()
 	{

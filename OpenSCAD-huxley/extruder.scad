@@ -419,18 +419,18 @@ module belt_clamp()
 }
 
 
-
+/*
 
 motor_plate();
 
 back_plate();
 
 belt_clamp();
-
+*/
 rotate([0,-60,0])
 	translate([-32, 25,0])
 		m6_shaft(body=true, gearonly=true);
-
+/*
 translate([-42+32*cos(-60),16,32*sin(-60)])
 	idler(body=true);
 
@@ -444,7 +444,7 @@ translate([-42+32*cos(-60),16,32*sin(-60)])
 accessories(holes=true, angle=90);
 }
 
-
+*/
 rotate([90,0,0])
 	grub_gear(hub_height = 7, hub_radius = 9.5, shaft_radius = 2.5, height = 8, number_of_teeth = 11, 
 		inner_radius = 6.5, outer_radius = 9, angle=25);
@@ -453,4 +453,4 @@ translate([0, 8,0])
 	rotate([-90,0,0])
  		nema11(body=true, slots = 5, counterbore=8);
 
-accessories();
+//accessories();

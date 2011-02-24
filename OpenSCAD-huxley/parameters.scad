@@ -82,6 +82,7 @@ limit_switch_centres=9.5;
 
 bearing_mount_centres=18;
 bearing_width=7;
+bearing_depth=18;
 
 // X axis parameters - many should be relative
 

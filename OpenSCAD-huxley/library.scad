@@ -465,7 +465,7 @@ module grub_gear(hub_height=7.5, hub_radius = 9.5, shaft_radius = 2.5, height =1
 }
 
 
-grub_gear();
+//grub_gear();
 
 //gear();
 
@@ -484,7 +484,7 @@ grub_gear();
 
 //bearing_holder();
 
-//teardrop();
+teardrop();
 
 //pentanut();
 

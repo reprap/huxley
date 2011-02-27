@@ -227,6 +227,19 @@ module nema11(body = true, slots = -1, counterbore = -1)
 module pentanut(height=40)
 {
 	scale([1.1, 1.1, 1.1])
+		linear_extrude(height = height, center = true, convexity = 10, twist = 0)
+			polygon(points = [ [0, -nutsize],
+							[-nutsize*sqrt(3), 0], 
+							[0, nutsize], 
+							[nutsize*sin(60), nutsize*cos(60)], 
+							[nutsize*sin(120), nutsize*cos(120)], 
+							], paths=[[0,1,2,3,4]]);
+}
+
+/*
+module pentanut(height=40)
+{
+	scale([1.1, 1.1, 1.1])
 	rotate([0,0,60])
 	intersection()
 	{
@@ -246,7 +259,7 @@ module pentanut(height=40)
 				cube([nutsize*10, nutsize*10,height]);
 	}
 }
-
+*/
 
 // Make a RepRap teardrop with its axis along Z
 // If truncated is true, chop the apex; if not, come to a point
@@ -484,9 +497,11 @@ module grub_gear(hub_height=7.5, hub_radius = 9.5, shaft_radius = 2.5, height =1
 
 //bearing_holder();
 
-teardrop();
+//teardrop();
+
 
 //pentanut();
+
 
 //nema14(body = false, counterbore = 8);
 

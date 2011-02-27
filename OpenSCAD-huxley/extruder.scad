@@ -21,7 +21,7 @@ motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_
 motor_position=[-32*cos(motor_angle), 1, 32*sin(motor_angle)];
 base_position=[0,0,0];
 accessories_position=[0,0,0];
-
+clamp_position=[-12, -44, -9];
 
 // Module that either gives a cylinder or a teardrop
 
@@ -365,13 +365,56 @@ module drive_assembly()
 
 }
 
+module bracket_holes(teardrop_angle=-1)
+{
+	for(x=[-1,1])
+	for(z=[0,1])
+	{
+		translate([x*12, -30, -4-10*z])
+			rotate([90,0,0])
+			{
+				maybe_teardrop(h=40, r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+				if(teardrop_angle>=0)
+					translate([0,0,-7])
+						rotate([0, 0, teardrop_angle])
+							pentanut(height=20);
+			}
+	}
+}
+
+
+module belt_clamp()
+{
+	difference()
+	{
+		translate([0, 0, 0])
+			cube([8,5,18], center=true);
+		translate(base_position-clamp_position)
+			bracket_holes(teardrop_angle=-1);
+	}
+}
+
 module base_plate()
 {
 	difference()
 	{
-		translate([0, 0, plate_thickness/2])
-			cube([50,60,plate_thickness], center=true);
+		union()
+		{
+			translate([0, 0, plate_thickness/2])
+				cube([50,60,plate_thickness], center=true);
+			if(huxley)
+				translate([0, -29,-8.5+plate_thickness/2])
+					difference()
+					{
+						cube([32, 20, 22], center=true);
+						translate([0, 8, -4])
+							cube([40, 20, 20], center=true);
+					}
+		}
 		accessories(holes=true, angle=361);
+		if(huxley)
+			translate(bracket_position-base_position)
+				bracket_holes(teardrop_angle=90);
 	}
 }
 
@@ -395,6 +438,7 @@ module motor_plate()
 			block_holes(teardrop_angle=-1);
 	}
 }
+
 
 
 /*
@@ -430,6 +474,10 @@ translate(idler_position)
 translate(base_position)
 	base_plate();
 
+translate(clamp_position)
+	belt_clamp();
+
+
 translate(motor_plate_position)
 	motor_plate();
 
@@ -449,6 +497,8 @@ translate(accessories_position)
 //idler();
 
 //base_plate();
+
+//belt_clamp(); // 2 off
 
 //motor_plate();
 

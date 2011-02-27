@@ -1,8 +1,6 @@
 include <parameters.scad>;
 use <library.scad>;
 
-exploded=true;
-
 motor_angle=-10;
 gear_mesh=7;
 clamp_centres=19;
@@ -15,27 +13,14 @@ fixed_block_width=33;
 back_plate_height=41;
 motor_plate_extra_x=35;
 
-if(exploded)
-{
-	drive_assembly_position=[-3,filament_y_offset,31];
-	fixed_block_position=[0,0,10];
-	idler_position=[0,0,idler_z];
-	back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
-	motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
-	motor_position=[-32*cos(motor_angle), 1, 32*sin(motor_angle)];
-	base_position=[0,0,0];
-	accessories_position=[0,0,0];
-} else
-{
-	drive_assembly_position=[-3,filament_y_offset,31];
-	fixed_block_position=[0,0,10];
-	idler_position=[0,0,idler_z];
-	back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
-	motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
-	motor_position=[-32*cos(motor_angle), 1, 32*sin(motor_angle)];
-	base_position=[0,0,0];
-	accessories_position=[0,0,0];
-}
+drive_assembly_position=[-3,filament_y_offset,31];
+fixed_block_position=[0,0,10];
+idler_position=[0,0,idler_z];
+back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
+motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
+motor_position=[-32*cos(motor_angle), 1, 32*sin(motor_angle)];
+base_position=[0,0,0];
+accessories_position=[0,0,0];
 
 
 // Module that either gives a cylinder or a teardrop
@@ -127,7 +112,7 @@ module accessories(holes=false,  teardrop_angle=270)
 
 }
 
-module idler_holes(screws=true)
+module idler_holes(screws=true, bearing_hole=true)
 {
 	translate([-1,0,0])
 	union()
@@ -144,6 +129,26 @@ module idler_holes(screws=true)
 						cylinder(h=20,r=nutsize,center=true, $fn=6);
 				}
 		}
+
+		if(bearing_hole)
+		{
+			rotate([90,0,0])
+			{
+				translate([0,0,-15])
+				{
+					teardrop(h=30,r=screwsize/2,truncateMM=0.5);
+					translate([0,0,-27])
+						teardrop(h=30,r=screwsize,truncateMM=0.5);
+					translate([0,0,49])
+						pentanut(height=20);
+				}
+				cylinder(h=5.5,r=6,center=true, $fn=20);
+				translate([-5,0,0])
+					cube([11,12,5.5],center=true);
+			}
+		}
+
+
 	}
 }
 
@@ -172,7 +177,7 @@ module idler(body=true)
 				cylinder(h=100,r=1,center=true, $fn=15);
 		}
 	} else
-		idler_holes(screws=true, bearing=false, filament=true);
+		idler_holes(screws=true, bearing_hole=true);
 }
 
 module motor_spacer()
@@ -187,14 +192,19 @@ module motor_spacer()
 		}
 }
 
+module drive_gear()
+{
+	grub_gear(hub_height = 7, hub_radius = 9.5, shaft_radius = 2.5, height = 8, number_of_teeth = 11, 
+		inner_radius = 6.5, outer_radius = 9, angle=25);
+}
+
 module drive_gear_and_motor(gear=true, holes=false)
 {
 	translate(motor_position)
 	{
 		if(gear)
 			rotate([90,gear_mesh,0])
-				grub_gear(hub_height = 7, hub_radius = 9.5, shaft_radius = 2.5, height = 8, number_of_teeth = 11, 
-					inner_radius = 6.5, outer_radius = 9, angle=25);
+				drive_gear();
 		
 		translate([0, 12,0])
 			rotate([-90,0,0])
@@ -243,20 +253,22 @@ module driven_gear(wingnut=false)
 
 module block_holes(teardrop_angle=-1)
 {
-	translate([-10, 0, 0])
+	translate([-13, 0, 0])
 		rotate([90, 0, 0])
 		{
 			maybe_teardrop(h=80,r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
 			translate([0, 0, 31])
-				cylinder(h = 20, r = screwsize, center=true, $fn=6);
+				rotate([0,0,30])
+					cylinder(h = 20, r = screwsize, center=true, $fn=6);
 		}
 
-	translate([10, 0, 0])
+	translate([13, 0, 0])
 		rotate([90, 0, 0])
 		{
 			maybe_teardrop(h=80,r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
 			translate([0, 0, 31])
-				cylinder(h = 20, r = screwsize, center=true, $fn=6);
+				rotate([0,0,30])
+					cylinder(h = 20, r = screwsize, center=true, $fn=6);
 		}
 
 	translate([-13, 0, 32])
@@ -264,19 +276,11 @@ module block_holes(teardrop_angle=-1)
 		{
 			maybe_teardrop(h=80,r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
 			translate([0, 0, 31])
-				cylinder(h = 20, r = screwsize, center=true, $fn=6);
+				rotate([0,0,30])
+					cylinder(h = 20, r = screwsize, center=true, $fn=6);
 		}
 }
 
-module back_plate()
-{
-	difference()
-	{
-		cube([32,fat_plate_thickness,back_plate_height], center=true);
-		translate(drive_assembly_position-back_plate_position)
-			m6_shaft(body=false,big_hole=7.5,  teardrop_angle=180);
-	}
-}
 
 module fixed_block()
 {
@@ -304,12 +308,18 @@ module fixed_block()
 				}
 				nozzle_holes(teardrop_angle=180);
 				translate(idler_position-fixed_block_position)
-					idler_holes(screws=true, bearing=false);
+					idler_holes(screws=true, bearing_hole=false);
 				translate(drive_assembly_position-fixed_block_position)
 					m6_shaft(body=false,big_hole=4, teardrop_angle=-1);
 			}
 			translate(back_plate_position-fixed_block_position)
-				back_plate();
+				difference()
+				{
+					cube([32,fat_plate_thickness,back_plate_height], center=true);
+					translate(drive_assembly_position-back_plate_position)
+						m6_shaft(body=false,big_hole=7.5,  teardrop_angle=180);
+				}
+				
 		}
 		block_holes(teardrop_angle=180);
 	}
@@ -387,16 +397,32 @@ module motor_plate()
 }
 
 
+/*
+//------------------------------------------------------------------
+
+// Uncomment to check hole interference
+
+translate(fixed_block_position)
+	block_holes();
+
+translate(idler_position)
+	idler_holes();
+
+translate(base_position)
+	nozzle_holes();
+
+//--------------------------------------------------------------------
+*/
 
 
-translate(motor_plate_position)
-	motor_plate();
+
+
+//--------------------------------------------------------------------
+
+// Uncomment to get entire assembly
 
 translate(fixed_block_position)
 	fixed_block();
-
-translate(drive_assembly_position)
-	drive_assembly();
 
 translate(idler_position)
 	idler();
@@ -404,5 +430,34 @@ translate(idler_position)
 translate(base_position)
 	base_plate();
 
+translate(motor_plate_position)
+	motor_plate();
+
+translate(drive_assembly_position)
+	drive_assembly();
+
 translate(accessories_position)
 	accessories();
+//-----------------------------------------------------------------
+
+
+
+// Individual built items
+
+//fixed_block();
+
+//idler();
+
+//base_plate();
+
+//motor_plate();
+
+//motor_spacer();
+
+//drive_gear();
+
+//driven_gear(wingnut=true);
+
+//adjustable_bearing(true,-1); // 2 off
+
+//adjustable_bearing(false,-1);

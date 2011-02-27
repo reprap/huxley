@@ -1,116 +1,152 @@
 include <parameters.scad>;
 use <library.scad>;
 
-module accessories(holes=false, angle=270)
-{
-	translate([-3,15,-62])
-	{
-		for(i=[-1,1])
-		{
-			if(!holes)
-			translate([0, i*x_bar_gap/2 , 0])
-				rotate([0,90,0])
-					rod(100);
+motor_angle=-10;
+gear_mesh=7;
+clamp_centres=19;
+plate_thickness=5;
+fat_plate_thickness=8;
+filament_y_offset=-27;
+bearing_gap=44;
+idler_z = 31;
+fixed_block_width=33;
+back_plate_height=41;
+motor_plate_extra_x=35;
 
-			if(!holes)
-			translate([0, i*40 , 0])
-				cube([100,2,6], center=true);
+drive_assembly_position=[-3,filament_y_offset,31];
+fixed_block_position=[0,0,10];
+idler_position=[0,0,idler_z];
+back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
+motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
+motor_position=[-32*cos(motor_angle), 1, 32*sin(motor_angle)];
+base_position=[0,0,0];
+accessories_position=[0,0,0];
+
+
+// Module that either gives a cylinder or a teardrop
+
+module maybe_teardrop(h=80, r=screwsize/2, teardrop_angle=-1, faces=15)
+{
+	if(teardrop_angle < 0)
+		cylinder(h=h,r=r,center=true, $fn=faces);
+	else
+		rotate([0, 0, teardrop_angle])
+			translate([0, 0, -h/2])
+				teardrop(h=h,r=r,truncateMM=0.5);
+}
+
+module nozzle_holes(teardrop_angle=-1)
+{
+	// M3 holes
+
+	translate([-clamp_centres/2, 0, 0])
+		maybe_teardrop(h=80, r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+
+	translate([clamp_centres/2, 0, 0])
+		maybe_teardrop(h=80, r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+
+	// Filament
+
+	maybe_teardrop(h=150, r=1, teardrop_angle=teardrop_angle, faces=15);
+}
+
+module accessories(holes=false,  teardrop_angle=270)
+{
+	if(huxley)
+		translate([0,0,-bearing_depth/2])
+		{
+
+			for(i=[-1,1])
+			{
+		
+				// X axis rods
+		
+				if(!holes)
+				translate([0, i*x_bar_gap/2 , 0])
+					rotate([0,90,0])
+						rod(100);
+				// Belts
+		
+				if(!holes)
+				translate([0, i*40 , 0])
+					cube([100,2,6], center=true);
+		
+				//360 bearings
+		
+		
+					translate([i*20, -x_bar_gap/2, 0])
+						rotate([90,0,-90])
+							if(holes)
+								adjustable_bearing(true,  teardrop_angle);
+							else
+								adjustable_bearing(true,-1);
+		
+			}
+
+		// 180 bearing
+	
+			translate([20, x_bar_gap/2, 0])
+				rotate([90, 0,90])
+					if(holes)
+						adjustable_bearing(false,  teardrop_angle);
+					else
+						adjustable_bearing(false,-1);
 		}
 
-		translate([7, x_bar_gap/2, 0])
-			rotate([-90,180,90])
-				if(holes)
-					adjustable_bearing(true,angle);
-				else
-					adjustable_bearing(true,-1);
-		translate([-35, x_bar_gap/2, 0])
-			rotate([-90,180,90])
-				if(holes)
-					adjustable_bearing(true,angle);
-				else
-					adjustable_bearing(true,-1);
-
-		if(holes)
-		translate([14, 25-4 , 0])
-			rotate([0,0,angle])
-				if(huxley)
-					teardrop(h=40,r=screwsize/2,truncateMM=0.5);
-				else
-					teardrop(h=40,r=2,truncateMM=0.5);
-
-		if(holes && mendel)
-		translate([14, -25-4 , 0])
-			rotate([0,0,angle])
-				teardrop(h=40,r=2,truncateMM=0.5);
-
-		if(holes && huxley)
-		translate([14, 25-12 , 0])
-			rotate([0,0,angle])
-					teardrop(h=40,r=screwsize/2,truncateMM=0.5);
-
-		translate([15, -x_bar_gap/2 + 3, 0])
-			rotate([-90,180,-90])
-				if(holes)
-					adjustable_bearing(false,360-angle);
-				else
-					adjustable_bearing(false,-1);
-
-	}
-
-/*translate([-42+32*cos(-60),16,32*sin(-60)])
-	translate([7,0,-50+12.5])		
-		cylinder(h=25,r=4,center=true, $fn=15);*/
-}
-
-module filament()
-{
-	union()
+	if(holes)
 	{
-		cylinder(h=100,r=1,center=true, $fn=15);
-		translate([0,0,-10])
-			cylinder(h=10,r1=1, r2=2,center=true, $fn=15);
+	
+		// Nozzle
+	
+		translate([0, 0, -23+plate_thickness])
+		cylinder(h=46,r=4,center=true, $fn=15);
+		nozzle_holes();
+
+		if(mendel)
+		{
+			for(i=[-1,1])
+				translate([20, i*25, 0])
+					cylinder(h=50,r=2,center=true, $fn=15);
+		}
 	}
+
 }
 
-module idler_holes(screws=true, bearing=true)
+module idler_holes(screws=true, bearing_hole=true)
 {
-	translate([1,0,0])
+	translate([-1,0,0])
 	union()
 	{
 		if(screws)
 		{
 			for(i=[-1,1])
 			for(j=[-1,1])
-			translate([0,i*4,j*5])
+			translate([0,i*11,j*7])
 				rotate([0,90,0])
 				{
 					cylinder(h=60,r=screwsize/2,center=true, $fn=10);
-					translate([0,0,30])
+					translate([0,0,-17])
 						cylinder(h=20,r=nutsize,center=true, $fn=6);
 				}
 		}
 
-		if(bearing)
+		if(bearing_hole)
 		{
 			rotate([90,0,0])
 			{
 				translate([0,0,-15])
-					rotate([0,0,180])
-					{
-						teardrop(h=30,r=screwsize/2,truncateMM=0.5);
-						translate([0,0,-19])
-						{
-							teardrop(h=30,r=screwsize,truncateMM=0.5);
-							translate([0,0,59])
-								pentanut(height=20);
-						}
-					}
-				cylinder(h=4.2,r=6,center=true, $fn=20);
-				translate([5,0,0])
-					cube([10,12,4.2],center=true);
+				{
+					teardrop(h=30,r=screwsize/2,truncateMM=0.5);
+					translate([0,0,-27])
+						teardrop(h=30,r=screwsize,truncateMM=0.5);
+					translate([0,0,49])
+						pentanut(height=20);
+				}
+				cylinder(h=5.5,r=6,center=true, $fn=20);
+				translate([-5,0,0])
+					cube([11,12,5.5],center=true);
 			}
 		}
-
 
 
 	}
@@ -119,338 +155,309 @@ module idler_holes(screws=true, bearing=true)
 
 module idler(body=true)
 {
+	translate([7,0,0])
 	if(body)
 	{
 		difference()
 		{
 			union()
 			{
-				translate([-2,0,0])
-					cube([12,15,16], center = true);
-				translate([1,0,10])
-					cube([18,10,5], center = true);
+				translate([2,0,0])
+					cube([12,30,22], center = true);
+				translate([-1,0,12])
+					cube([18,12,5], center = true);
 			}
+			translate([0,0,-12])
+				cube([20,10,10], center = true);
+			translate([-11,0,-11])
+				rotate([0,60,0])
+					cube([20,40,20], center = true);
 			idler_holes();
-			translate([7,0,0])
-				filament();
+			translate([-7,0,0])
+				cylinder(h=100,r=1,center=true, $fn=15);
 		}
 	} else
-		idler_holes(screws=true, bearing=false, filament=true);
+		idler_holes(screws=true, bearing_hole=true);
 }
 
-module retaining_block_holes(teardrop=false)
+module motor_spacer()
 {
-	translate([24,30,0])
-		rotate([90,180,0])
-			if(teardrop)
-				teardrop(h = 60, r = screwsize/2, truncateMM=0.5);
-			else
-				translate([0,0,30])
-				{
-					cylinder(h = 60, r = screwsize/2, center=true,$fn=10);
-					translate([0,0,23])
-						cylinder(h = 20, r = screwsize, center=true,$fn=10);
-				}
-
-	if(!teardrop)
-			translate([21,0,0])
-				for(i=[-1,1])
-					translate([0,i*8,0])
-						rotate([0,0,45])
-							cube([5,5,18], center = true);		
-}
-
-module retaining_block(body=true)
-{
-	if(body)
-	{
+	translate([0, 10.75, 0])
 		difference()
 		{
-			translate([21,0,0])
-				union()
-				{
-					cube([14,16,18], center = true);
-					for(i=[-1,1])
-						translate([0,i*8,0])
-							rotate([0,0,45])
-								cube([5,5,18], center = true);	
-				}
-			idler_holes(screws=true, bearing=false,filament=true);
-			retaining_block_holes(teardrop=true);
+			cube([nema11_square, 2.5, nema11_square], center = true);
+			translate([0, 12,0])
+				rotate([-90,0,0])
+			 		nema11(body=false, slots = -1, counterbore=-1);
 		}
-	} else
-		retaining_block_holes(teardrop=false);
 }
 
-module nozzle_block_holes(teardrop=false, filament=true)
+module drive_gear()
 {
-	translate([7,0,0])
+	grub_gear(hub_height = 7, hub_radius = 9.5, shaft_radius = 2.5, height = 8, number_of_teeth = 11, 
+		inner_radius = 6.5, outer_radius = 9, angle=25);
+}
+
+module drive_gear_and_motor(gear=true, holes=false)
+{
+	translate(motor_position)
+	{
+		if(gear)
+			rotate([90,gear_mesh,0])
+				drive_gear();
+		
+		translate([0, 12,0])
+			rotate([-90,0,0])
+		 		nema11(body=!holes, slots = -1, counterbore=8);
+		if(!holes)
+			motor_spacer();
+	}
+}
+
+module driven_gear(wingnut=false)
+{
+	translate([0,-7,0])
+	rotate([-90,0,0])
+	difference()
+	{
 		union()
 		{
-			filament();
-
-			translate([0,0,-50])
-				rotate([0,0,90])
-					teardrop(h=30,r=4.2,truncateMM=0.5);
-			for(i=[-1,1])
-				rotate([0,0,90])
-					translate([0,i*19/2,-35])
-						teardrop(h=50,r=screwsize/2,truncateMM=0.5);
-		
-			for(i=[-1,1])
-				translate([i*6,30,-20])
-					rotate([90,-90,0])
-						translate([0,0,30])
-						{
-							cylinder(h = 60, r = screwsize/2, center=true,$fn=10);
-							translate([0,0,23])
-								cylinder(h = 20, r = screwsize, center=true,$fn=10);
-							translate([0,0,-23])
-								cylinder(h = 20, r = screwsize, center=true,$fn=6);
-						}
-		}
-}
-
-module nozzle_block(body=true)
-{
-	if(body)
-	{
-		difference()
-		{
-			union()
-			{
-				translate([13,0,-20])
+			grub_gear(hub_height = 10, hub_radius = 10, shaft_radius = 3, height = 7, 
+				number_of_teeth = 31, inner_radius = 22, outer_radius = 25, angle=15);
+			if(wingnut)
 				difference()
 				{
-					cube([59,16,10], center = true);
-					translate([59/2-16/2, 0, 5])
-						cube([22,20,10], center = true);
-					translate([-59/2+8/2, 0, 5])
-						cube([13,20,10], center = true);
+					strut(p1=[0,-7,-5], p2=[0,7,-5], wide = 10, deep = 15, round=2);
+					cylinder(h=50,r=9, center=true,$fn=20);
 				}
-				translate([7,0,-14])
-					cube([10,16,10], center = true);
-			}
-
-			idler_holes(screws=true, bearing=false,filament=true);
-			nozzle_block_holes(teardrop=true);
 		}
-	} else
-		nozzle_block_holes(teardrop=false);
+		if(wingnut)
+		{
+			intersection()
+			{
+				translate([0,16,-14])
+					rotate([-30,0,0])
+						cube([4, 26, 20], center=true);
+				cylinder(h=50,r=13, center=true,$fn=20);
+			}
+			intersection()
+			{
+				translate([0,-16,-14])
+					rotate([30,0,0])
+						cube([4, 26, 20], center=true);
+				cylinder(h=50,r=13, center=true,$fn=20);
+			}
+		}
+	}
+}
+
+module block_holes(teardrop_angle=-1)
+{
+	translate([-13, 0, 0])
+		rotate([90, 0, 0])
+		{
+			maybe_teardrop(h=80,r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+			translate([0, 0, 31])
+				rotate([0,0,30])
+					cylinder(h = 20, r = screwsize, center=true, $fn=6);
+		}
+
+	translate([13, 0, 0])
+		rotate([90, 0, 0])
+		{
+			maybe_teardrop(h=80,r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+			translate([0, 0, 31])
+				rotate([0,0,30])
+					cylinder(h = 20, r = screwsize, center=true, $fn=6);
+		}
+
+	translate([-13, 0, 32])
+		rotate([90, 0, 0])
+		{
+			maybe_teardrop(h=80,r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+			translate([0, 0, 31])
+				rotate([0,0,30])
+					cylinder(h = 20, r = screwsize, center=true, $fn=6);
+		}
 }
 
 
-module m6_shaft(body=true, gearonly = false)
+module fixed_block()
 {
+	difference()
+	{
+		union()
+		{
+			difference()
+			{
+				union()
+				{
+					cube([32,fixed_block_width,10], center=true);
+					translate([-9.5,0,14 + (back_plate_height - 38)/2])
+						cube([13,33,back_plate_height], center=true);
+					difference()
+					{
+						translate([0,0,12])
+							cube([10,8,24], center=true);
+						translate([11,0,20])
+							rotate([0,60,0])
+								cube([20,40,20], center = true);
+						translate([0,0,27])
+								cube([20,40,20], center = true);
+					}
+				}
+				nozzle_holes(teardrop_angle=180);
+				translate(idler_position-fixed_block_position)
+					idler_holes(screws=true, bearing_hole=false);
+				translate(drive_assembly_position-fixed_block_position)
+					m6_shaft(body=false,big_hole=4, teardrop_angle=-1);
+			}
+			translate(back_plate_position-fixed_block_position)
+				difference()
+				{
+					cube([32,fat_plate_thickness,back_plate_height], center=true);
+					translate(drive_assembly_position-back_plate_position)
+						m6_shaft(body=false,big_hole=7.5,  teardrop_angle=180);
+				}
+				
+		}
+		block_holes(teardrop_angle=180);
+	}
+}
+
+module m6_shaft(body=true,big_hole=7.5, teardrop_angle=-1)
+{
+	translate([0,-17,0])
 	rotate([-90,0,0])
 	{
 		union()
 		{
-
-			if(gearonly || body)
-				translate([0,0,-33])
-					rotate([0,0,2])
-						difference()
-						{
-							union()
-							{
-								grub_gear(hub_height = 10, hub_radius = 10, shaft_radius = 3, height = 7, 
-									number_of_teeth = 31, inner_radius = 22, outer_radius = 25, angle=15);
-								difference()
-								{
-									strut(p1=[0,-13,-5], p2=[0,13,-5], wide = 10, deep = 15, round=2);
-									cylinder(h=50,r=9, center=true,$fn=20);
-								}
-							}
-							intersection()
-							{
-								translate([0,18,-14])
-									rotate([-45,0,0])
-										cube([4, 26, 20], center=true);
-								cylinder(h=50,r=20, center=true,$fn=20);
-							}
-							intersection()
-							{
-								translate([0,-18,-14])
-									rotate([45,0,0])
-										cube([4, 26, 20], center=true);
-								cylinder(h=50,r=20, center=true,$fn=20);
-							}
-
-						}
-			if(!gearonly)
-			{
+			translate([0,0,(bearing_gap+27)/2])
 				if(body)
-					translate([0,0,-17])
-						rod(55);
+					rod(bearing_gap+27);
 				else
-					cylinder(h=80,r=7.5,center=true);
-	
-				translate([0,0,5])
-					if(body)
-						cylinder(h=6,r=9.5,center=true);
-					else
-						cylinder(h=6.2,r=10,center=true);
-	
-				translate([0,0,-23])
-					if(body)
-						cylinder(h=6,r=9.5,center=true);
-					else
-						cylinder(h=6.2,r=10,center=true);
-			}
+					maybe_teardrop(h=bearing_gap+52,r=big_hole,teardrop_angle=teardrop_angle,truncateMM=0.5);
+
+
+			translate([0,0,bearing_gap+22])
+				if(body)
+					cylinder(h=6,r=9.5,center=true);
+				else
+					maybe_teardrop(h=6.2,r=10,teardrop_angle=teardrop_angle,truncateMM=0.5);
+
+			translate([0,0,22])
+				if(body)
+					cylinder(h=6,r=9.5,center=true);
+				else
+					maybe_teardrop(h=6.2,r=10,teardrop_angle=teardrop_angle,truncateMM=0.5);
 		}	
 	}
 }
 
-module plate_holes()
+module drive_assembly()
 {
-	union()
+	m6_shaft(body=true, big_hole=7.5, teardrop_angle=-1);
+	driven_gear(wingnut=true);
+	drive_gear_and_motor();
+	translate([5+4, -filament_y_offset, 0])
+		rotate([90,0,0])
+			cylinder(h=4, r=5, center=true, $fn=20);
+
+}
+
+module base_plate()
+{
+	difference()
 	{
-		rotate([0,-60,0])
-			translate([-32, 25,0])
-				m6_shaft(body=false,gearonly = false);
-		
-		translate([-42+32*cos(-60),16,32*sin(-60)])
-			idler(body=false);
-		
-		translate([0, 11.5,0])
-			rotate([-90,0,0])
-		  		nema11(body=false, slots = 5, counterbore=8);
-		
-		translate([-42+32*cos(-60),16,32*sin(-60)])
-		{
-			retaining_block(body=false);
-			nozzle_block(body=false);
-			for(i=[-1,1])
-			for(j=[0,1])
-			translate([j*18,0,-34+i*6])
-				rotate([90,0,0])
-				{
-					cylinder(h=200,r=screwsize/2, center=true, $fn=10);
-					translate([0,0,-9])
-						cylinder(h=50,r=screwsize, center=true, $fn=6);
-				}
-		}
-
-		/*translate([-55,0,0])
-			rotate([0, 30, 0])
-				cube([50,80,100], center=true);
-
-		translate([32,0,-40])
-			rotate([0, 28, 0])
-				cube([50,80,100], center=true);*/
+		translate([0, 0, plate_thickness/2])
+			cube([50,60,plate_thickness], center=true);
+		accessories(holes=true, angle=361);
 	}
 }
+
+
 
 module motor_plate()
 {
 	difference()
 	{
-		translate([nema11_square/2+2-50, 0,nema11_square/2+2-69])
-			union()
-			{
-				cube([50, 8, 69]);
-				translate([38,-20,0])
-					cube([12, 20, 5]);
-			}
-		plate_holes();
-		accessories(holes=true, angle=90);
-	}
-}
-
-module back_plate()
-{
-	difference()
-	{	
-		translate([-(50-nema11_square/2-2), 24,nema11_square/2 + 2 -  69])
-			union()
-			{
-				cube([50-nema11_square/2, 8, 69-nema11_square - 4]);
-				translate([30,0,0])
-					cube([20, 20, 5]);
-				translate([-8,0,0])
-					cube([12, 20, 5]);
-				if(huxley)
-				{
-					translate([17, 15, -1])
-					intersection()
-					{
-						difference()
-						{
-							cube([28, 30, 35],center=true);
-							difference()
-							{
-								translate([0,0,25])
-									rotate([-25,0,0])
-										cube([40, 60, 40],center=true);
-								translate([0,0,-20])
-										cube([42, 62, 42],center=true);
-							}
-					
-						}
-						union()
-						{
-							translate([0,0,15])
-									rotate([-25,0,0])
-										cube([40, 60, 40],center=true);
-								translate([0,20,5])
-										rotate([-45,0,0])
-											cube([42, 62, 42],center=true);
-						}
-	
-					}
-				}
-			}
-		plate_holes();
-		accessories(holes=true, angle=270);
-	}
-}
-
-
-module belt_clamp()
-{
-	difference()
-	{
-		translate([-(50-nema11_square/2-2), 24,nema11_square/2 + 2 -  69])
-			translate([26, 35, -9.5])
-				cube([7,7,18.5], center=true);
-		plate_holes();
+		translate([-motor_plate_extra_x/2, 0, 0])
+			cube([32+motor_plate_extra_x,fat_plate_thickness,back_plate_height], center=true);
+		translate([-motor_plate_extra_x/2-17,0,-26])
+			cube([36,20,20], center=true);
+		translate([-motor_plate_extra_x/2-17,0,26])
+			cube([36,20,20], center=true);
+		translate(drive_assembly_position-motor_plate_position)
+			m6_shaft(body=false,big_hole=7.5, teardrop_angle=-1);
+		translate(drive_assembly_position-motor_plate_position)
+			drive_gear_and_motor(gear=false, holes=true);
+		translate(fixed_block_position-motor_plate_position)
+			block_holes(teardrop_angle=-1);
 	}
 }
 
 
 /*
+//------------------------------------------------------------------
 
-motor_plate();
+// Uncomment to check hole interference
 
-back_plate();
+translate(fixed_block_position)
+	block_holes();
 
-belt_clamp();
+translate(idler_position)
+	idler_holes();
+
+translate(base_position)
+	nozzle_holes();
+
+//--------------------------------------------------------------------
 */
-rotate([0,-60,0])
-	translate([-32, 25,0])
-		m6_shaft(body=true, gearonly=true);
-/*
-translate([-42+32*cos(-60),16,32*sin(-60)])
-	idler(body=true);
 
-translate([-42+32*cos(-60),16,32*sin(-60)])
-	retaining_block(body=true);
 
-difference()
-{
-translate([-42+32*cos(-60),16,32*sin(-60)])
-	nozzle_block(body=true);
-accessories(holes=true, angle=90);
-}
 
-*/
-rotate([90,0,0])
-	grub_gear(hub_height = 7, hub_radius = 9.5, shaft_radius = 2.5, height = 8, number_of_teeth = 11, 
-		inner_radius = 6.5, outer_radius = 9, angle=25);
 
-translate([0, 8,0])
-	rotate([-90,0,0])
- 		nema11(body=true, slots = 5, counterbore=8);
+//--------------------------------------------------------------------
 
-//accessories();
+// Uncomment to get entire assembly
+
+translate(fixed_block_position)
+	fixed_block();
+
+translate(idler_position)
+	idler();
+
+translate(base_position)
+	base_plate();
+
+translate(motor_plate_position)
+	motor_plate();
+
+translate(drive_assembly_position)
+	drive_assembly();
+
+translate(accessories_position)
+	accessories();
+//-----------------------------------------------------------------
+
+
+
+// Individual built items
+
+//fixed_block();
+
+//idler();
+
+//base_plate();
+
+//motor_plate();
+
+//motor_spacer();
+
+//drive_gear();
+
+//driven_gear(wingnut=true);
+
+//adjustable_bearing(true,-1); // 2 off
+
+//adjustable_bearing(false,-1);

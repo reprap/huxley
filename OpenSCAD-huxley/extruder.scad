@@ -124,9 +124,9 @@ module idler_holes(screws=true, bearing_hole=true)
 			translate([0,i*11,j*7])
 				rotate([0,90,0])
 				{
-					cylinder(h=60,r=screwsize/2,center=true, $fn=10);
+					cylinder(h=60,r=0.5+screwsize/2,center=true, $fn=10);
 					translate([0,0,-17])
-						cylinder(h=20,r=nutsize,center=true, $fn=6);
+						cylinder(h=20,r=1.3*nutsize,center=true, $fn=6);
 				}
 		}
 
@@ -136,7 +136,7 @@ module idler_holes(screws=true, bearing_hole=true)
 			{
 				translate([0,0,-15])
 				{
-					teardrop(h=30,r=screwsize/2,truncateMM=0.5);
+					teardrop(h=35,r=screwsize/2,truncateMM=0.5);
 					translate([0,0,-27])
 						teardrop(h=30,r=screwsize,truncateMM=0.5);
 					translate([0,0,49])
@@ -160,14 +160,11 @@ module idler(body=true)
 	{
 		difference()
 		{
-			union()
-			{
-				translate([2,0,0])
-					cube([12,30,22], center = true);
-				translate([-1,0,12])
-					cube([18,12,5], center = true);
-			}
-			translate([0,0,-12])
+			translate([2,0,0])
+				cube([12,30,22], center = true);
+
+			for(z=[-1,1])
+			translate([0,0,z*12])
 				cube([20,10,10], center = true);
 			translate([-11,0,-11])
 				rotate([0,60,0])
@@ -295,6 +292,8 @@ module fixed_block()
 					cube([32,fixed_block_width,10], center=true);
 					translate([-9.5,0,14 + (back_plate_height - 38)/2])
 						cube([13,33,back_plate_height], center=true);
+					translate([0,0,back_plate_height-8])
+						cube([8,8,6], center = true);
 					difference()
 					{
 						translate([0,0,12])

@@ -226,7 +226,8 @@ module nema11(body = true, slots = -1, counterbore = -1)
 
 module pentanut(height=40)
 {
-	scale([1.1, 1.1, 1.1])
+	scale([1.3, 1.3, 1.0])
+		translate([0,0,height/2])
 		linear_extrude(height = height, center = true, convexity = 10, twist = 0)
 			polygon(points = [ [0, -nutsize],
 							[-nutsize*sqrt(3), 0], 
@@ -500,7 +501,7 @@ module grub_gear(hub_height=7.5, hub_radius = 9.5, shaft_radius = 2.5, height =1
 //teardrop();
 
 
-//pentanut();
+pentanut();
 
 
 //nema14(body = false, counterbore = 8);

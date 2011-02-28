@@ -103,8 +103,7 @@ module z_height_adjuster()
 			{
 				translate([0,0,-50])
 					teardrop(r=screwsize/2,h=100,truncateMM=-1);
-				translate([0,0,halfwidth+20])
-					scale(v=[1.1,1.1,1])
+				translate([0,0,halfwidth])
 						pentanut(height=10);
 			}
 	}

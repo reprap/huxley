@@ -78,16 +78,16 @@ module z_axis_motor_base()
 					rotate([0,-90,0])
 					{
 						teardrop(r=screwsize/2,h=zay*2,truncateMM=0);
-						translate([0,0,25])
-						pentanut(10);
+						translate([0,0,5])
+							pentanut(10);
 					}
 				
 				translate([20,32,10])
 					rotate([0,-90,0])
 					{
 						teardrop(r=screwsize/2,h=zay*2,truncateMM=0);
-						translate([0,0,25])
-						pentanut(10);
+						translate([0,0,5])
+							pentanut(10);
 					}
 				
 // Z clamp notch

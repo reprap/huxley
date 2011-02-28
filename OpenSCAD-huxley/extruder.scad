@@ -137,9 +137,9 @@ module idler_holes(screws=true, bearing_hole=true)
 				translate([0,0,-15])
 				{
 					teardrop(h=35,r=screwsize/2,truncateMM=0.5);
-					translate([0,0,-27])
+					translate([0,0,-26])
 						teardrop(h=30,r=screwsize,truncateMM=0.5);
-					translate([0,0,49])
+					translate([0,0,48])
 						pentanut(height=20);
 				}
 				cylinder(h=5.5,r=6,center=true, $fn=20);
@@ -458,7 +458,7 @@ translate(base_position)
 */
 
 
-
+/*
 
 //--------------------------------------------------------------------
 
@@ -486,14 +486,14 @@ translate(drive_assembly_position)
 translate(accessories_position)
 	accessories();
 //-----------------------------------------------------------------
-
+*/
 
 
 // Individual built items
 
 //fixed_block();
 
-//idler();
+idler();
 
 //base_plate();
 

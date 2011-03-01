@@ -12,6 +12,7 @@ idler_z = 31;
 fixed_block_width=33;
 back_plate_height=41;
 motor_plate_extra_x=35;
+hob_gap=55;
 
 drive_assembly_position=[-3,filament_y_offset,31];
 fixed_block_position=[0,0,10];
@@ -34,6 +35,65 @@ module maybe_teardrop(h=80, r=screwsize/2, teardrop_angle=-1, faces=15)
 			translate([0, 0, -h/2])
 				teardrop(h=h,r=r,truncateMM=0.5);
 }
+
+
+module hob_jig_holes(teardrop_angle=-1)
+{
+
+		union()
+		{
+				rotate([-90,0,0])
+			{
+			if(teardrop_angle>=0)
+				cylinder(h=6,r=7.5,center=true);
+			else
+				maybe_teardrop(h=hob_gap+20,r=7.5,teardrop_angle=teardrop_angle,truncateMM=0.5);
+
+			for(z=[-1,1])
+			translate([0,0,z*(hob_gap/2+3)])
+				if(teardrop_angle<0)
+					cylinder(h=6,r=9.5,center=true);
+				else
+					maybe_teardrop(h=6.2,r=10,teardrop_angle=teardrop_angle,truncateMM=0.5);
+			}
+
+			for(y=[-1,1])
+				translate([0, -7.5+y*12, 0])
+					cube([3,10,50], center=true);
+
+		}	
+
+}
+
+module hob_jig()
+{
+	difference()
+	{
+		translate([0, 0, -5])
+			cube([30, hob_gap+10,20], center=true);
+		hob_jig_holes(teardrop_angle=-1);
+		translate([0, 0, 10])
+			cube([40, hob_gap-10,20], center=true);
+	}
+}
+
+module hob_jig_handle()
+{
+	difference()
+	{
+	union()
+	{
+		translate([0, -7.5, -70])
+			cube([15, 15, 70], center=true);
+		translate([0, -7.5, -40])
+			cube([15, 35, 15], center=true);
+	}
+	for(y=[-1,1])
+		translate([0, -7.5+y*12, -50])
+				teardrop(h=50,r=screwsize/2,truncateMM=0.5);
+	}
+}
+
 
 module nozzle_holes(teardrop_angle=-1)
 {
@@ -458,7 +518,7 @@ translate(base_position)
 */
 
 
-/*
+
 
 //--------------------------------------------------------------------
 
@@ -486,14 +546,18 @@ translate(drive_assembly_position)
 translate(accessories_position)
 	accessories();
 //-----------------------------------------------------------------
-*/
+
 
 
 // Individual built items
 
+//hob_jig();
+
+//hob_jig_handle();
+
 //fixed_block();
 
-idler();
+//idler();
 
 //base_plate();
 

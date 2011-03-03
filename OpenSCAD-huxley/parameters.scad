@@ -1,7 +1,11 @@
 // Parameters file for RepRap Huxley (and maybe Mendel)
 
-huxley=true;
-mendel=!huxley;
+// Set ONE OF these true.
+
+huxley=false;
+mendel=true;
+
+
 
 pi=3.14159265;
 
@@ -28,6 +32,7 @@ rodwasherdiameter = 2 * rodsize;
 screwpitch = screwsize / 6;
 nutsize = 0.8 * screwsize;
 nutdiameter = 1.9 * screwsize;
+pentanutradius=1.04*screwsize;
 washersize = 0.2 * screwsize;
 washerdiameter = 2 * screwsize;
 partthick = 2 * rodsize;

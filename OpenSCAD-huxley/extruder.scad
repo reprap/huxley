@@ -20,21 +20,10 @@ idler_position=[0,0,idler_z];
 back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
 motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
 motor_position=[-32*cos(motor_angle), 1, 32*sin(motor_angle)];
+spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0];
 base_position=[0,0,0];
 accessories_position=[0,0,0];
 clamp_position=[-12, -44, -9];
-
-// Module that either gives a cylinder or a teardrop
-
-module maybe_teardrop(h=80, r=screwsize/2, teardrop_angle=-1, faces=15)
-{
-	if(teardrop_angle < 0)
-		cylinder(h=h,r=r,center=true, $fn=faces);
-	else
-		rotate([0, 0, teardrop_angle])
-			translate([0, 0, -h/2])
-				teardrop(h=h,r=r,truncateMM=0.5);
-}
 
 
 module hob_jig_holes(teardrop_angle=-1)
@@ -42,24 +31,24 @@ module hob_jig_holes(teardrop_angle=-1)
 
 		union()
 		{
-				rotate([-90,0,0])
+			rotate([-90,0,0])
 			{
-			if(teardrop_angle>=0)
-				cylinder(h=6,r=7.5,center=true);
-			else
-				maybe_teardrop(h=hob_gap+20,r=7.5,teardrop_angle=teardrop_angle,truncateMM=0.5);
-
-			for(z=[-1,1])
-			translate([0,0,z*(hob_gap/2+3)])
-				if(teardrop_angle<0)
-					cylinder(h=6,r=9.5,center=true);
+				if(teardrop_angle>=0)
+					cylinder(h=6,r=7.5,center=true, $fn=20);
 				else
-					maybe_teardrop(h=6.2,r=10,teardrop_angle=teardrop_angle,truncateMM=0.5);
+					teardrop(h=hob_gap+20,r=7.5,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
+	
+				for(z=[-1,1])
+				translate([0,0,z*(hob_gap/2+3)])
+					if(teardrop_angle>0)
+						cylinder(h=6,r=9.5,center=true, $fn=20);
+					else
+						teardrop(h=6.2,r=10,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
 			}
 
 			for(y=[-1,1])
-				translate([0, -7.5+y*12, 0])
-					cube([3,10,50], center=true);
+				translate([0, -5+y*12, 0])
+					cube([3,15,50], center=true);
 
 		}	
 
@@ -83,14 +72,14 @@ module hob_jig_handle()
 	{
 	union()
 	{
-		translate([0, -7.5, -70])
+		translate([0, -5, -70])
 			cube([15, 15, 70], center=true);
-		translate([0, -7.5, -40])
+		translate([0, -5, -40])
 			cube([15, 35, 15], center=true);
 	}
 	for(y=[-1,1])
-		translate([0, -7.5+y*12, -50])
-				teardrop(h=50,r=screwsize/2,truncateMM=0.5);
+		translate([0, -5+y*12, -50])
+			teardrop(h=50,r=screwsize/2,center=true,teardrop_angle=180,truncateMM=0.5);
 	}
 }
 
@@ -100,14 +89,17 @@ module nozzle_holes(teardrop_angle=-1)
 	// M3 holes
 
 	translate([-clamp_centres/2, 0, 0])
-		maybe_teardrop(h=80, r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+		teardrop(h=80, r=screwsize/2, center=true, teardrop_angle=teardrop_angle, truncateMM=0.5);
 
 	translate([clamp_centres/2, 0, 0])
-		maybe_teardrop(h=80, r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+		teardrop(h=80, r=screwsize/2, center=true,   teardrop_angle=teardrop_angle, truncateMM=0.5);
 
 	// Filament
 
-	maybe_teardrop(h=150, r=1, teardrop_angle=teardrop_angle, faces=15);
+	cylinder(h=150, r=1, center=true,$fn=15);
+	translate([0, 0, 15])
+		cylinder(h=10, r1=1, r2=2, center=true,$fn=15);
+
 }
 
 module accessories(holes=false,  teardrop_angle=270)
@@ -196,11 +188,11 @@ module idler_holes(screws=true, bearing_hole=true)
 			{
 				translate([0,0,-15])
 				{
-					teardrop(h=35,r=screwsize/2,truncateMM=0.5);
+					teardrop(h=35,r=screwsize/2, center=false,   teardrop_angle=0,truncateMM=0.5);
 					translate([0,0,-26])
-						teardrop(h=30,r=screwsize,truncateMM=0.5);
-					translate([0,0,48])
-						pentanut(height=20);
+						teardrop(h=30,r=screwsize, center=false,   teardrop_angle=0,truncateMM=0.5);
+					translate([0,0,35])
+						pentanut(height=20, center=true);
 				}
 				cylinder(h=5.5,r=6,center=true, $fn=20);
 				translate([-5,0,0])
@@ -239,10 +231,11 @@ module idler(body=true)
 
 module motor_spacer()
 {
-	translate([0, 10.75, 0])
 		difference()
 		{
 			cube([nema11_square, 2.5, nema11_square], center = true);
+			translate([0, -2.5/2-1, 33])
+				cube([50, 5,50], center = true);
 			translate([0, 12,0])
 				rotate([-90,0,0])
 			 		nema11(body=false, slots = -1, counterbore=-1);
@@ -266,8 +259,6 @@ module drive_gear_and_motor(gear=true, holes=false)
 		translate([0, 12,0])
 			rotate([-90,0,0])
 		 		nema11(body=!holes, slots = -1, counterbore=8);
-		if(!holes)
-			motor_spacer();
 	}
 }
 
@@ -313,7 +304,7 @@ module block_holes(teardrop_angle=-1)
 	translate([-13, 0, 0])
 		rotate([90, 0, 0])
 		{
-			maybe_teardrop(h=80,r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+			teardrop(h=80, r=screwsize/2,  center=true,  teardrop_angle=teardrop_angle, faces=15);
 			translate([0, 0, 31])
 				rotate([0,0,30])
 					cylinder(h = 20, r = screwsize, center=true, $fn=6);
@@ -322,7 +313,7 @@ module block_holes(teardrop_angle=-1)
 	translate([13, 0, 0])
 		rotate([90, 0, 0])
 		{
-			maybe_teardrop(h=80,r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+			teardrop(h=80,r=screwsize/2,  center=true, teardrop_angle=teardrop_angle, faces=15);
 			translate([0, 0, 31])
 				rotate([0,0,30])
 					cylinder(h = 20, r = screwsize, center=true, $fn=6);
@@ -331,7 +322,7 @@ module block_holes(teardrop_angle=-1)
 	translate([-13, 0, 32])
 		rotate([90, 0, 0])
 		{
-			maybe_teardrop(h=80,r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+			teardrop(h=80,r=screwsize/2, center=true, teardrop_angle=teardrop_angle, faces=15);
 			translate([0, 0, 31])
 				rotate([0,0,30])
 					cylinder(h = 20, r = screwsize, center=true, $fn=6);
@@ -395,20 +386,20 @@ module m6_shaft(body=true,big_hole=7.5, teardrop_angle=-1)
 				if(body)
 					rod(bearing_gap+27);
 				else
-					maybe_teardrop(h=bearing_gap+52,r=big_hole,teardrop_angle=teardrop_angle,truncateMM=0.5);
+					teardrop(h=bearing_gap+52,r=big_hole,center=true, teardrop_angle=teardrop_angle,truncateMM=0.5);
 
 
 			translate([0,0,bearing_gap+22])
 				if(body)
 					cylinder(h=6,r=9.5,center=true);
 				else
-					maybe_teardrop(h=6.2,r=10,teardrop_angle=teardrop_angle,truncateMM=0.5);
+					teardrop(h=6.2,r=10,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
 
 			translate([0,0,22])
 				if(body)
 					cylinder(h=6,r=9.5,center=true);
 				else
-					maybe_teardrop(h=6.2,r=10,teardrop_angle=teardrop_angle,truncateMM=0.5);
+					teardrop(h=6.2,r=10,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
 		}	
 	}
 }
@@ -432,11 +423,11 @@ module bracket_holes(teardrop_angle=-1)
 		translate([x*12, -30, -4-10*z])
 			rotate([90,0,0])
 			{
-				maybe_teardrop(h=40, r=screwsize/2, teardrop_angle=teardrop_angle, faces=15);
+				teardrop(h=40, r=screwsize/2, center=true,teardrop_angle=teardrop_angle, truncateMM=0.5);
 				if(teardrop_angle>=0)
-					translate([0,0,-7])
+					translate([0,0,-6])
 						rotate([0, 0, teardrop_angle])
-							pentanut(height=20);
+							pentanut(height=20,center=true);
 			}
 	}
 }
@@ -472,8 +463,18 @@ module base_plate()
 		}
 		accessories(holes=true, angle=361);
 		if(huxley)
+		{
 			translate(bracket_position-base_position)
 				bracket_holes(teardrop_angle=90);
+		} 
+		if(mendel)
+		{
+			translate([-25,0,0])
+				cube([20,80,20], center=true);
+			translate([-25,0,0])
+				rotate([0,60,0])
+					cube([20,80,20], center=true);
+		}
 	}
 }
 
@@ -514,6 +515,9 @@ translate(idler_position)
 translate(base_position)
 	nozzle_holes();
 
+translate(clamp_position)
+	bracket_holes();
+
 //--------------------------------------------------------------------
 */
 
@@ -533,12 +537,16 @@ translate(idler_position)
 translate(base_position)
 	base_plate();
 
-translate(clamp_position)
-	belt_clamp();
+if(huxley)
+	translate(clamp_position)
+		belt_clamp();
 
 
 translate(motor_plate_position)
 	motor_plate();
+
+translate(spacer_position)
+	motor_spacer();
 
 translate(drive_assembly_position)
 	drive_assembly();

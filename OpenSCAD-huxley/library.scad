@@ -46,14 +46,14 @@ module adjustable_bearing(b360=true, mounts=-1)
 							cylinder(r=1.5, h=50, centre = true, $fn=10);
 						else
 							rotate([0,0,mounts])
-								teardrop(r=1.5, h=50,  truncateMM=0.5);
+								teardrop(r=1.5, h=50,  center=false, teardrop_angle=0, truncateMM=0.5);
 				translate([22, -10, 0])rotate(90, [0, 1, 0])
 					rotate(-90, [1, 0, 0])
 						if(mounts > 360)
 							cylinder(r=1.5, h=50, centre = true, $fn=10);
 						else
 							rotate([0,0,mounts])
-								teardrop(r=1.5, h=50,  truncateMM=0.5);
+								teardrop(r=1.5, h=50,   center=false, teardrop_angle=0, truncateMM=0.5);
 			}
 		}else
 		{
@@ -62,10 +62,10 @@ module adjustable_bearing(b360=true, mounts=-1)
 		  		bearingProfile(b360);
 				translate([4, -10, 0])rotate(90, [0, 1, 0])
 					rotate(-90, [1, 0, 0])
-						teardrop(r=1.5, h=50, truncateMM=0.5);
+						teardrop(r=1.5, h=50,  center=false, teardrop_angle=0, truncateMM=0.5);
 				translate([22, -10, 0])rotate(90, [0, 1, 0])
 					rotate(-90, [1, 0, 0])
-						teardrop(r=1.5, h=50, truncateMM=0.5);
+						teardrop(r=1.5, h=50,  center=false, teardrop_angle=0, truncateMM=0.5);
 			}
 		}
 	}
@@ -224,73 +224,63 @@ module nema11(body = true, slots = -1, counterbore = -1)
 
 // Pentagon nut that matches a hexagon...
 
-module pentanut(height=40)
+module pentanut(height=2*nutsize, center=false)
 {
-	scale([1.3, 1.3, 1.0])
-		translate([0,0,height/2])
-		linear_extrude(height = height, center = true, convexity = 10, twist = 0)
-			polygon(points = [ [0, -nutsize],
-							[-nutsize*sqrt(3), 0], 
-							[0, nutsize], 
-							[nutsize*sin(60), nutsize*cos(60)], 
-							[nutsize*sin(120), nutsize*cos(120)], 
+		linear_extrude(height = height, center = center, convexity = 10, twist = 0)
+			polygon(points = [ [0, -pentanutradius],
+							[-pentanutradius*sqrt(3), 0], 
+							[0, pentanutradius], 
+							[pentanutradius*sin(60), pentanutradius*cos(60)], 
+							[pentanutradius*sin(120), pentanutradius*cos(120)], 
 							], paths=[[0,1,2,3,4]]);
 }
 
-/*
-module pentanut(height=40)
-{
-	scale([1.1, 1.1, 1.1])
-	rotate([0,0,60])
-	intersection()
-	{
-		translate([-nutsize,-nutsize*5,-20])
-			cube([nutsize*10, nutsize*10,height]);
-		rotate([0,0,60])
-			translate([-nutsize,-nutsize*5,-20])
-				cube([nutsize*10, nutsize*10,height]);
-		rotate([0,0,120])
-			translate([-nutsize,-nutsize*5,-20])
-				cube([nutsize*10, nutsize*10,height]);
-		rotate([0,0,180])
-			translate([-nutsize,-nutsize*5,-20])
-				cube([nutsize*10, nutsize*10,height]);
-		rotate([0,0,240])
-			translate([-nutsize,-nutsize*5,-20])
-				cube([nutsize*10, nutsize*10,height]);
-	}
-}
-*/
+
 
 // Make a RepRap teardrop with its axis along Z
 // If truncated is true, chop the apex; if not, come to a point
 
 // I stole this function from Erik...
 
+// If teardrop_angle is negative, this just gives an ordinary cylinder.  If it is zero or positive, the 
+// teardrop is rotated through that angle.  Other arguments are as for the standard cylinder function.
 
-module teardrop(r=1.5, h=20, truncateMM=0.5)
+module teardrop_internal(r=1.5, h=20, teardrop_angle=-1, truncateMM=0.5)
 {
-	union()
-	{
-		if(truncateMM > 0)
-		{
-			intersection()
+	if(teardrop_angle < 0)
+		cylinder(r=r, h=h, center=false, $fn=max(2*r, 10));
+	 else
+		rotate([0, 0, teardrop_angle])
+			union()
 			{
-				translate([truncateMM,0,h/2]) 
+				if(truncateMM > 0)
+				{
+					intersection()
+					{
+						translate([truncateMM,0,h/2]) 
+							scale([1,1,h])
+								cube([r*2.8275,r*2,1],center=true);
+						scale([1,1,h]) 
+								rotate([0,0,3*45])
+									cube([r,r,1]);
+					}
+				} else
+				{
 					scale([1,1,h])
-						cube([r*2.8275,r*2,1],center=true);
-				scale([1,1,h]) 
 						rotate([0,0,3*45])
 							cube([r,r,1]);
-			}
-		} else
-		{
-			scale([1,1,h])
-				rotate([0,0,3*45])
-					cube([r,r,1]);
+				}
+				cylinder(r=r, h = h, center=false, $fn=max(2*r, 10));
 		}
-		cylinder(r=r, h = h, $fn=20);
-	}
+}
+
+module teardrop(r=1.5, h=20, center=false, teardrop_angle=-1, truncateMM=0.5)
+{
+	if(center)
+		translate([0, 0, -h/2])
+			teardrop_internal(r=r, h=h, teardrop_angle=teardrop_angle, truncateMM=truncateMM);
+	else
+		teardrop_internal(r=r, h=h, teardrop_angle=teardrop_angle, truncateMM=truncateMM);
 }
 
 
@@ -466,20 +456,20 @@ module grub_gear(hub_height=7.5, hub_radius = 9.5, shaft_radius = 2.5, height =1
 		
 		cylinder(h = 30, r = shaft_radius, center=true,$fn=20);
 		
-		translate([shaft_radius + 2, 0, -6])
+		translate([shaft_radius + 2, 0, -5])
 			hat_cube([2.7,5.5,10], center=true);
 		translate([0,0,-3.75])
 			rotate([0,90,0])
 				if(hub_radius >= outer_radius)
-					teardrop(h = 2*hub_radius, r = screwsize/2,truncateMM=0.5);
+					teardrop(h = 2*hub_radius, r = screwsize/2, center=false, teardrop_angle=0, truncateMM=0.5);
 				else
 					rotate([0,0,180])
-						teardrop(h = 2*hub_radius, r = screwsize/2,truncateMM=0.5);
+						teardrop(h = 2*hub_radius, r = screwsize/2, center=false, teardrop_angle=0, truncateMM=0.5);
 	}
 }
 
 
-//grub_gear();
+grub_gear();
 
 //gear();
 
@@ -498,10 +488,10 @@ module grub_gear(hub_height=7.5, hub_radius = 9.5, shaft_radius = 2.5, height =1
 
 //bearing_holder();
 
-//teardrop();
+//teardrop(r=15, h=20, center=true, teardrop_angle=-1, truncateMM=0.5);
 
 
-pentanut();
+//pentanut(height=2*nutsize,center=true);
 
 
 //nema14(body = false, counterbore = 8);

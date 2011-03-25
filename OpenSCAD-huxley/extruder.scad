@@ -3,7 +3,7 @@ use <library.scad>;
 
 motor_angle=-10;
 gear_mesh=7;
-clamp_centres=19;
+clamp_centres=23;
 plate_thickness=5;
 fat_plate_thickness=8;
 filament_y_offset=-27;
@@ -89,10 +89,10 @@ module nozzle_holes(teardrop_angle=-1)
 	// M3 holes
 
 	translate([-clamp_centres/2, 0, 0])
-		teardrop(h=80, r=screwsize/2, center=true, teardrop_angle=teardrop_angle, truncateMM=0.5);
+		teardrop(h=100, r=screwsize/2, center=true, teardrop_angle=teardrop_angle, truncateMM=0.5);
 
 	translate([clamp_centres/2, 0, 0])
-		teardrop(h=80, r=screwsize/2, center=true,   teardrop_angle=teardrop_angle, truncateMM=0.5);
+		teardrop(h=100, r=screwsize/2, center=true,   teardrop_angle=teardrop_angle, truncateMM=0.5);
 
 	// Filament
 
@@ -301,7 +301,7 @@ module driven_gear(wingnut=false)
 
 module block_holes(teardrop_angle=-1)
 {
-	translate([-13, 0, 0])
+	translate([-8.5, 0, 0])
 		rotate([90, 0, 0])
 		{
 			teardrop(h=80, r=screwsize/2,  center=true,  teardrop_angle=teardrop_angle, faces=15);
@@ -310,7 +310,7 @@ module block_holes(teardrop_angle=-1)
 					cylinder(h = 20, r = screwsize, center=true, $fn=6);
 		}
 
-	translate([13, 0, 0])
+	translate([8.5, 0, 0])
 		rotate([90, 0, 0])
 		{
 			teardrop(h=80,r=screwsize/2,  center=true, teardrop_angle=teardrop_angle, faces=15);
@@ -319,7 +319,7 @@ module block_holes(teardrop_angle=-1)
 					cylinder(h = 20, r = screwsize, center=true, $fn=6);
 		}
 
-	translate([-13, 0, 32])
+	translate([-8.5, 0, 32])
 		rotate([90, 0, 0])
 		{
 			teardrop(h=80,r=screwsize/2, center=true, teardrop_angle=teardrop_angle, faces=15);
@@ -501,11 +501,11 @@ module motor_plate()
 
 
 
-/*
+
 //------------------------------------------------------------------
 
 // Uncomment to check hole interference
-
+/*
 translate(fixed_block_position)
 	block_holes();
 

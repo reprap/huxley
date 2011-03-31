@@ -128,7 +128,7 @@ module strut(p1=[0,0,0], p2=[0,0,1], wide = 10, deep = 5, round=1)
 
 
 /*
-  This gives either a NEMA 14 stepper motor or its mounting holes.
+  These gives either a NEMA  stepper motor or its mounting holes.
 
   If body is true, you get the motor.  If it is false you get the screw holes and central
   hole needed to mount the motor.  If counterbore is positive and you are generating the mounting holes
@@ -137,7 +137,49 @@ module strut(p1=[0,0,0], p2=[0,0,1], wide = 10, deep = 5, round=1)
 
 */
 
-module nema14(body = true, slots = -1, counterbore = -1)
+module nema17(body = true, slots = -1, counterbore = -1, hubdepth=50)
+{
+	color([1,0.4,0.4,1])
+	union()
+	{
+		if(body)
+		{
+			translate([0, 0, nema17_shaft_length/2 - nema17_shaft_projection - nema17_hub_depth])
+				cylinder(r = nema17_shaft/2, h = nema17_shaft_length, center = true, $fn=20);
+			translate([0, 0, -nema17_hub_depth])
+				cylinder(r = nema17_hub/2, h = nema17_hub_depth*2, center = true, $fn=20);
+	
+			translate([0, 0, nema17_length/2])
+				cube([nema17_square,nema17_square,nema17_length], center = true);
+		} else
+			translate([0, 0, -hubdepth/2])
+				cylinder(r = nema17_hub/2 + 1, h = hubdepth, center = true, $fn=20);
+
+		if(!body)
+		{
+			union()
+			{
+				for ( x = [-0.5, 0.5] ) 
+				for ( y = [-0.5, 0.5] )
+				{
+					translate([x*nema17_screws, y*nema17_screws, -20])
+						if(slots <= 0)
+							cylinder(r = nema17_screw_r, h = 50, center = true, $fn=10);
+						else
+							cube([slots, nema17_screw_r*2, 50], center=true);
+					if(counterbore >= 0)
+						translate([x*nema17_screws, y*nema17_screws, -25-counterbore])
+							if(slots <= 0)
+								cylinder(r = 2*nema17_screw_r, h = 50, center = true, $fn=10);
+							else
+								cube([slots+2*nema17_screw_r, nema17_screw_r*4,  50], center=true);
+				}
+			}
+		}
+	}
+}
+
+module nema14(body = true, slots = -1, counterbore = -1, hubdepth=50)
 {
 	color([1,0.4,0.4,1])
 	union()
@@ -152,8 +194,8 @@ module nema14(body = true, slots = -1, counterbore = -1)
 			translate([0, 0, nema14_length/2])
 				cube([nema14_square,nema14_square,nema14_length], center = true);
 		} else
-			translate([0, 0, -20])
-				cylinder(r = nema14_hub/2 + 1, h = 50, center = true, $fn=20);
+			translate([0, 0, -hubdepth/2])
+				cylinder(r = nema14_hub/2 + 1, h = hubdepth, center = true, $fn=20);
 
 		if(!body)
 		{
@@ -179,7 +221,7 @@ module nema14(body = true, slots = -1, counterbore = -1)
 	}
 }
 
-module nema11(body = true, slots = -1, counterbore = -1)
+module nema11(body = true, slots = -1, counterbore = -1, hubdepth=50)
 {
 	color([1,0.4,0.4,1])
 	union()
@@ -194,8 +236,8 @@ module nema11(body = true, slots = -1, counterbore = -1)
 			translate([0, 0, nema11_length/2])
 				cube([nema11_square,nema11_square,nema11_length], center = true);
 		} else
-			translate([0, 0, -20])
-				cylinder(r = nema11_hub/2 + 1, h = 50, center = true, $fn=20);
+			translate([0, 0, -hubdepth/2])
+				cylinder(r = nema11_hub/2 + 1, h = hubdepth, center = true, $fn=20);
 
 		if(!body)
 		{
@@ -469,7 +511,7 @@ module grub_gear(hub_height=7.5, hub_radius = 9.5, shaft_radius = 2.5, height =1
 }
 
 
-grub_gear();
+//grub_gear();
 
 //gear();
 
@@ -494,7 +536,7 @@ grub_gear();
 //pentanut(height=2*nutsize,center=true);
 
 
-//nema14(body = false, counterbore = 8);
+//nema17(body = false, counterbore = 8, hubdepth=10);
 
 //nema11(body = false, counterbore = 8);
 //strut(p1=[20,10,20], p2=[20, 60, 40], wide=10, deep=5, round=2);

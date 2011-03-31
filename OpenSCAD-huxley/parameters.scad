@@ -54,6 +54,18 @@ vertex_radius=sqrt(rodsize*rodsize + vertexoffset*vertexoffset);
 vertex_ang = atan(vertexoffset/rodsize)-30;
 vertex_gap = 2*vertex_radius*cos(vertex_ang);
 
+// Nema 17 dimensions - these are absolute
+
+nema17_square=42;
+nema17_screws=31;
+nema17_screw_r=1.5;
+nema17_hub=22;
+nema17_hub_depth=2;
+nema17_length=36;
+nema17_shaft=5;
+nema17_shaft_length=55;
+nema17_shaft_projection=22;
+
 // Nema 14 dimensions - these are absolute
 
 nema14_square=35.3;

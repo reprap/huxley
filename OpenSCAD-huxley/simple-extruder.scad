@@ -56,22 +56,14 @@ module tie_rods(radius=3/2)
 			cylinder(h=50, r=radius, center=true,$fn=10);
 }
 
-module block()
+module mendel_mount(radius=4/2)
 {
-	difference()
-	{
-		translate([hub_x+2,-0.5,0])
-			cube([nema17_square+1, 28, nema17_square], center = true);
-		translate(drive_offset)
-			drive(body=false);
-		translate([10,0,10])
-			cube([40,17,40], center=true);
-		tie_rods();
-		filament();
-		translate(drive_offset)
-			end_bearing(body=false);
-	}
+	for(i=[-1/2,1/2])
+		translate([0,i*50,0])
+			cylinder(h=100, r=radius, center=true,$fn=10);
 }
+
+
 
 module bearing_hole()
 {
@@ -128,12 +120,13 @@ module lever()
 		bearing_hole();
 
 	teardrop(h=200, r=filament_radius*1.5,teardrop_angle=0,truncateMM=0.5);
-	translate(-drive_offset)
-	drive(body=false);
+	translate(drive_offset-lever_offset)
+			drive(body=false);
+
 	}
 }
 
-module block1()
+module block()
 {
 	difference()
 	{
@@ -141,43 +134,33 @@ module block1()
 		{
 			translate([-nema17_screws/2,-0.5,0])
 				cube([10, 28, nema17_square], center = true);
-	
-			translate([-nema17_screws/2-8,-0.5,5])
-				cube([10, 10, 10], center = true);
-	
+			translate([-nema17_screws/2-8,3.5,5])
+				cube([10, 20, 10], center = true);
+			translate([-8,9.5,0])
+				cube([8, 8, 15], center = true);
 			translate([-nema17_screws/2+5,-0.5,-nema17_screws/2-0.5])
 				cube([10, 28, 10], center = true);
+
+			translate([nema17_screws/2+2.5,-0.5,0])
+				cube([15, 28, nema17_square], center = true);
+			translate([nema17_screws/2+5,-0.5,-nema17_screws/2-0.5])
+				cube([10, 28, 10], center = true);
+			translate([0,-0.5,-nema17_screws/2-1.5])
+				cube([24, 28, 8], center = true);
 	
 		}
 		translate(-block_offset)
 			tie_rods();
 		translate([-clamp_centres/2,0,9]-block_offset)
 			cylinder(h=40, r=4, center=true,$fn=10);
-
 		translate(drive_offset-block_offset)
 			drive(body=false);
-	}
-}
-
-module block2()
-{
-	difference()
-	{
-		union()
-		{
-			translate([nema17_screws/2,-0.5,0])
-				cube([10, 28, nema17_square], center = true);
-			translate([nema17_screws/2+5,-0.5,-nema17_screws/2-0.5])
-				cube([10, 28, 10], center = true);
-		}
 
 		translate([nema17_screws/2,-5.5,10])
-			cube([12, 28,nema17_square ], center = true);
-		translate(-block_offset)
-			tie_rods();
-		//translate(-drive_offset)
-			drive(body=false);
+			cube([20, 28,nema17_square ], center = true);
+
 	}
+
 }
 
 module sectioncube()
@@ -198,6 +181,8 @@ cylinder(h=4, r=5, center=true,$fn=20);
 //translate([0,0,-28])
 //cylinder(h=40, r=4, center=true,$fn=20);
 
+//mendel_mount();
+
 intersection()
 {
 union()
@@ -206,20 +191,17 @@ union()
 //translate(idler_offset)
 //idler_bearing();
 
-//translate(drive_offset)
-//	drive(body=false);
+translate(drive_offset)
+	drive(body=true);
 
-//filament();
+filament();
 //tie_rods();
 
 translate(block_offset)
-{
-block1();
-block2();
-}
+block();
 
-translate(lever_offset)
-	lever();
+//translate(lever_offset)
+//	lever();
 }
 //sectioncube();
 }

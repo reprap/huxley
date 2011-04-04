@@ -2,9 +2,12 @@ include <parameters.scad>;
 use <library.scad>;
 
 hub_x=-4.5;
-drive_offset=[hub_x,-14.5,0];
-block_offset=[0,0,0];
+drive_offset=[hub_x,-14.6,0];
+block_offset=[hub_x,0,0];
+lever_offset=[0,0,0];
+idler_offset=[5.5,0,0];
 clamp_centres=28;
+filament_radius=1.75/2;
 
 module end_bearing(body=true)
 {
@@ -43,14 +46,14 @@ module drive(body=true)
 
 module filament()
 {
-	cylinder(h=200, r=1.75/2, center=true,$fn=10);
+	cylinder(h=200, r=filament_radius, center=true,$fn=10);
 }
 
-module tie_rods()
+module tie_rods(radius=3/2)
 {
 	for(i=[-1/2,1/2])
 		translate([i*clamp_centres,0,-30])
-			cylinder(h=200, r=3/2, center=true,$fn=10);
+			cylinder(h=50, r=radius, center=true,$fn=10);
 }
 
 module block()
@@ -70,22 +73,153 @@ module block()
 	}
 }
 
+module bearing_hole()
+{
+	rotate([90,0,0])
+	{
+		translate([0,0,-15])
+		{
+			teardrop(h=35,r=screwsize/2, center=false,   teardrop_angle=0,truncateMM=0.5);
+			translate([0,0,-26])
+				teardrop(h=30,r=screwsize, center=false,   teardrop_angle=0,truncateMM=0.5);
+			translate([0,0,35])
+				pentanut(height=20, center=true);
+		}
+		cylinder(h=5.5,r=6,center=true, $fn=20);
+		translate([-5,0,0])
+			cube([11,12,5.5],center=true);
+	}
+}
+
+module lever()
+{
+	difference()
+	{
+	translate([0,0,12])
+		cube([65,15,40], center=true);
+
+	translate([-8,0,13])
+	{
+		rotate([90, 0, 0])
+			cylinder(r=10, h=20 , center=true);
+		translate([-25,0,-10])
+			cube([50,20,40], center=true);
+		translate([-10,0,-25])
+			cube([40,20,50], center=true);
+	}
+
+	translate([32,0,10])
+			cube([30,20,60], center=true);
+
+	translate([32,0,23])
+			rotate([0,-45,0])
+				cube([30,20,60], center=true);
+
+	translate([-5,0,-10])
+			rotate([0,-45,0])
+				cube([20,20,20], center=true);
+
+	translate([23,0,-10])
+			rotate([0,-45,0])
+				cube([20,20,20], center=true);
+
+
+	translate(idler_offset - lever_offset)
+		bearing_hole();
+
+	teardrop(h=200, r=filament_radius*1.5,teardrop_angle=0,truncateMM=0.5);
+	translate(-drive_offset)
+	drive(body=false);
+	}
+}
+
+module block1()
+{
+	difference()
+	{
+		union()
+		{
+			translate([-nema17_screws/2,-0.5,0])
+				cube([10, 28, nema17_square], center = true);
+	
+			translate([-nema17_screws/2-8,-0.5,5])
+				cube([10, 10, 10], center = true);
+	
+			translate([-nema17_screws/2+5,-0.5,-nema17_screws/2-0.5])
+				cube([10, 28, 10], center = true);
+	
+		}
+		translate(-block_offset)
+			tie_rods();
+		translate([-clamp_centres/2,0,9]-block_offset)
+			cylinder(h=40, r=4, center=true,$fn=10);
+
+		translate(drive_offset-block_offset)
+			drive(body=false);
+	}
+}
+
+module block2()
+{
+	difference()
+	{
+		union()
+		{
+			translate([nema17_screws/2,-0.5,0])
+				cube([10, 28, nema17_square], center = true);
+			translate([nema17_screws/2+5,-0.5,-nema17_screws/2-0.5])
+				cube([10, 28, 10], center = true);
+		}
+
+		translate([nema17_screws/2,-5.5,10])
+			cube([12, 28,nema17_square ], center = true);
+		translate(-block_offset)
+			tie_rods();
+		//translate(-drive_offset)
+			drive(body=false);
+	}
+}
+
+module sectioncube()
+{
+	translate([0,-50,0])
+		cube([100,100,100], center=true);
+}
+
+module idler_bearing()
+{
+rotate([90,0,0])
+cylinder(h=4, r=5, center=true,$fn=20);
+}
+
 
 
 // PEEK
 //translate([0,0,-28])
 //cylinder(h=40, r=4, center=true,$fn=20);
 
+intersection()
+{
+union()
+{
 // Idler
-translate([5.5,0,0])
-rotate([90,0,0])
-cylinder(h=4, r=5, center=true,$fn=20);
+//translate(idler_offset)
+//idler_bearing();
 
-translate(drive_offset)
-drive(body=true);
+//translate(drive_offset)
+//	drive(body=false);
 
- filament();
+//filament();
+//tie_rods();
 
 translate(block_offset)
-	block();
+{
+block1();
+block2();
+}
 
+translate(lever_offset)
+	lever();
+}
+//sectioncube();
+}

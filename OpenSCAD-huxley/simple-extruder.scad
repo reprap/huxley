@@ -5,6 +5,7 @@ hub_x=-4.5;
 drive_offset=[hub_x,-14.6,0];
 block_offset=[hub_x,0,0];
 lever_offset=[0,0,0];
+lever_spring_offset=[-29,0,0];
 idler_offset=[5.5,0,0];
 clamp_centres=28;
 filament_radius=1.75/2;
@@ -23,6 +24,16 @@ module end_bearing(body=true)
 	}
 }
 
+module body_parts()
+{
+	translate([0,0,-15])
+		cylinder(h=10, r=4, center=true,$fn=20);
+	translate([0,0,-7.5])
+		cylinder(h=5, r=12.5/2, center=true,$fn=20);
+	rotate([-90,0,0])
+		end_bearing(body);
+}
+
 
 module drive(body=true)
 {
@@ -32,13 +43,11 @@ module drive(body=true)
 			{
 				nema17(body = body, slots = -1, counterbore = -1, hubdepth = 7);
 				if(body)
+					body_parts();
+				else
 				{
-					translate([0,0,-15])
-						cylinder(h=10, r=4, center=true,$fn=20);
-					translate([0,0,-7.5])
-						cylinder(h=5, r=12.5/2, center=true,$fn=20);
-					rotate([-90,0,0])
-						end_bearing(body);
+					scale([1.03,1,1.03])
+						body_parts();
 				}
 			}
 	}
@@ -46,14 +55,17 @@ module drive(body=true)
 
 module filament()
 {
-	cylinder(h=200, r=filament_radius, center=true,$fn=10);
+	cylinder(h=150, r=1, center=true,$fn=15);
+	translate([0, 0, -4])
+		cylinder(h=10, r1=1, r2=2, center=true,$fn=15);
 }
 
 module tie_rods(radius=3/2)
 {
 	for(i=[-1/2,1/2])
 		translate([i*clamp_centres,0,-30])
-			cylinder(h=50, r=radius, center=true,$fn=10);
+			teardrop(h=50,r=radius, center=true,   teardrop_angle=90,truncateMM=0.5);
+			//cylinder(h=50, r=radius, center=true,$fn=10);
 }
 
 module mendel_mount(radius=4/2)
@@ -72,9 +84,9 @@ module bearing_hole()
 		translate([0,0,-15])
 		{
 			teardrop(h=35,r=screwsize/2, center=false,   teardrop_angle=0,truncateMM=0.5);
-			translate([0,0,-26])
+			translate([0,0,-19.5])
 				teardrop(h=30,r=screwsize, center=false,   teardrop_angle=0,truncateMM=0.5);
-			translate([0,0,35])
+			translate([0,0,30])
 				pentanut(height=20, center=true);
 		}
 		cylinder(h=5.5,r=6,center=true, $fn=20);
@@ -120,9 +132,35 @@ module lever()
 		bearing_hole();
 
 	teardrop(h=200, r=filament_radius*1.5,teardrop_angle=0,truncateMM=0.5);
-	translate(drive_offset-lever_offset)
-			drive(body=false);
 
+//	translate(drive_offset-lever_offset)
+//			drive(body=false);
+
+	translate(drive_offset-lever_offset)
+		rotate([90,0,0])
+			translate([0,0,-22])
+				cylinder(h=100, r=7.5, center=true,$fn=20);
+
+	translate([0.5*nema17_screws, 0, 0.5*nema17_screws]+drive_offset-lever_offset)
+	rotate([90,0,0])
+		translate([0,0,-100])
+			teardrop(h=200, r=2,teardrop_angle=0,truncateMM=0.5);
+
+	translate(lever_spring_offset-lever_offset)
+		lever_spring();
+	}
+
+}
+
+module lever_spring()
+{
+	translate([0,0,-30])
+	union()
+	{
+		teardrop(h=200, r=3/2,teardrop_angle=0,truncateMM=0.5);
+			translate([0,0,31])
+				rotate([0,0,90])
+					pentanut(height=10, center=true);
 	}
 }
 
@@ -132,33 +170,56 @@ module block()
 	{
 		union()
 		{
-			translate([-nema17_screws/2,-0.5,0])
-				cube([10, 28, nema17_square], center = true);
-			translate([-nema17_screws/2-8,3.5,5])
-				cube([10, 20, 10], center = true);
-			translate([-8,9.5,0])
-				cube([8, 8, 15], center = true);
-			translate([-nema17_screws/2+5,-0.5,-nema17_screws/2-0.5])
-				cube([10, 28, 10], center = true);
+			// Filament guide
 
-			translate([nema17_screws/2+2.5,-0.5,0])
-				cube([15, 28, nema17_square], center = true);
-			translate([nema17_screws/2+5,-0.5,-nema17_screws/2-0.5])
-				cube([10, 28, 10], center = true);
-			translate([0,-0.5,-nema17_screws/2-1.5])
-				cube([24, 28, 8], center = true);
-	
+			difference()
+			{
+				translate([6,5,-10])
+					cube([10, 17, 11], center = true);
+				translate([7,11,0])
+					rotate([45,0,0])
+						cube([12, 17, 25], center = true);
+				translate([20,0,0])
+					rotate([0,45,0])
+						cube([12, 17, 25], center = true);
+			}
+			difference()
+			{
+				union()
+				{
+					translate([-nema17_screws/2,-0.5,0])
+						cube([10, 28, nema17_square], center = true);
+					translate([-nema17_screws/2-8,3.5,-5])
+						cube([10, 20, 10], center = true);
+					translate([-8,10.5,-3])
+						cube([8, 6, 22], center = true);
+					translate([-nema17_screws/2+5,-0.5,-nema17_screws/2-0.5])
+						cube([10, 28, 10], center = true);
+		
+					translate([nema17_screws/2+2.5,-0.5,0])
+						cube([15, 28, nema17_square], center = true);
+					translate([nema17_screws/2+5,-0.5,-nema17_screws/2-0.5])
+						cube([10, 28, 10], center = true);
+					translate([0,-0.5,-nema17_screws/2-1.5])
+						cube([24, 28, 8], center = true);
+			
+				}
+				translate(-block_offset)
+					tie_rods();
+				translate([-clamp_centres/2,0,9]-block_offset)
+					cylinder(h=40, r=4, center=true,$fn=10);
+				translate(drive_offset-block_offset) 
+					drive(body=false);   //non manifold
+		
+				translate([18,-5.5,10])
+					cube([20, 28,nema17_square ], center = true);
+		
+			}
 		}
-		translate(-block_offset)
-			tie_rods();
-		translate([-clamp_centres/2,0,9]-block_offset)
-			cylinder(h=40, r=4, center=true,$fn=10);
-		translate(drive_offset-block_offset)
-			drive(body=false);
-
-		translate([nema17_screws/2,-5.5,10])
-			cube([20, 28,nema17_square ], center = true);
-
+		translate(-block_offset) 
+			filament();
+		translate(lever_spring_offset-block_offset) 
+			lever_spring();
 	}
 
 }
@@ -191,17 +252,17 @@ union()
 //translate(idler_offset)
 //idler_bearing();
 
-translate(drive_offset)
-	drive(body=true);
+//translate(drive_offset)
+//	drive(body=true);
 
-filament();
+//filament();
 //tie_rods();
 
-translate(block_offset)
-block();
+//translate(block_offset)
+//block();
 
-//translate(lever_offset)
-//	lever();
+translate(lever_offset)
+	lever();
 }
 //sectioncube();
 }

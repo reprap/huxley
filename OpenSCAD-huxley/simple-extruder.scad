@@ -5,6 +5,7 @@ hub_x=-4.5;
 drive_offset=[hub_x,-14.6,0];
 block_offset=[hub_x,0,0];
 lever_offset=[0,0,0];
+plate_offset=[0,0,-30];
 lever_spring_offset=[-29,0,0];
 idler_offset=[5.5,0,0];
 clamp_centres=28;
@@ -60,19 +61,46 @@ module filament()
 		cylinder(h=10, r1=1, r2=2, center=true,$fn=15);
 }
 
-module tie_rods(radius=3/2)
+module tie_rods(radius=3/2,teardrop_angle=-1)
 {
 	for(i=[-1/2,1/2])
 		translate([i*clamp_centres,0,-30])
-			teardrop(h=50,r=radius, center=true,   teardrop_angle=90,truncateMM=0.5);
-			//cylinder(h=50, r=radius, center=true,$fn=10);
+			if(teardrop_angle<0)
+				cylinder(h=100, r=radius, center=true,$fn=10);
+			else
+				teardrop(h=100,r=radius, center=true,    teardrop_angle=teardrop_angle, truncateMM=0.5);
 }
 
-module mendel_mount(radius=4/2)
+
+
+module mendel_plate()
 {
-	for(i=[-1/2,1/2])
-		translate([0,i*50,0])
-			cylinder(h=100, r=radius, center=true,$fn=10);
+	difference()
+	{
+		union()
+		{
+			difference()
+			{
+				cube([35,60,5],center=true);
+				translate([0,-20,6])
+					rotate([3,0,0])
+						cube([40,30,7],center=true);
+			}
+			translate([0,0,4])
+				cube([35,28,7],center=true);
+		}
+
+		tie_rods();
+		cylinder(h=100, r=4, center=true,$fn=30);
+		for(i=[-1/2,1/2])
+		{
+			translate([0,i*46,0])
+				cylinder(h=100, r=2, center=true,$fn=10);
+			translate([0,i*56,0])
+				cube([4,10,100],center=true);
+		}
+
+	}
 }
 
 
@@ -93,6 +121,13 @@ module bearing_hole()
 		translate([-5,0,0])
 			cube([11,12,5.5],center=true);
 	}
+}
+
+module screw_notch()
+{
+
+	translate([0,0,-7])
+		cube([20,7,5],center=true);
 }
 
 module lever()
@@ -129,7 +164,10 @@ module lever()
 
 
 	translate(idler_offset - lever_offset)
+	{
 		bearing_hole();
+		screw_notch();
+	}
 
 	teardrop(h=200, r=filament_radius*1.5,teardrop_angle=0,truncateMM=0.5);
 
@@ -157,7 +195,7 @@ module lever_spring()
 	translate([0,0,-30])
 	union()
 	{
-		teardrop(h=200, r=3/2,teardrop_angle=0,truncateMM=0.5);
+		teardrop(h=200, r=2,teardrop_angle=0,truncateMM=0.5);
 			translate([0,0,31])
 				rotate([0,0,90])
 					pentanut(height=10, center=true);
@@ -205,14 +243,17 @@ module block()
 			
 				}
 				translate(-block_offset)
-					tie_rods();
+					tie_rods(teardrop_angle=90);
 				translate([-clamp_centres/2,0,9]-block_offset)
 					cylinder(h=40, r=4, center=true,$fn=10);
 				translate(drive_offset-block_offset) 
 					drive(body=false);   //non manifold
 		
 				translate([18,-5.5,10])
-					cube([20, 28,nema17_square ], center = true);
+					cube([20, 28,nema17_square], center = true);
+
+				translate([-18,-15.4,18])
+					cube([20, 5,15], center = true);
 		
 			}
 		}
@@ -258,11 +299,16 @@ union()
 //filament();
 //tie_rods();
 
+//mendel_mount(radius=4/2);
+
 //translate(block_offset)
 //block();
 
 translate(lever_offset)
 	lever();
+
+//translate(plate_offset)
+//	mendel_plate();
 }
 //sectioncube();
 }

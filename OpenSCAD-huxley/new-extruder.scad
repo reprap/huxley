@@ -41,6 +41,8 @@ fan_position=[21.5,0,27];
 accessories_position=[0,0,0];
 clamp_position=[-12, -44, -9];
 
+motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position;
+
 
 
 module hob_jig_holes(teardrop_angle=-1)
@@ -404,7 +406,7 @@ module fixed_block()
 					m6_shaft(body=false,big_hole=4, teardrop_angle=-1);
 				translate([-10,0,19])
 					rotate([0,-30,0])
-						cube([50,25,13], center=true);
+						cube([50,20,13], center=true);
 				
 			}
 			translate(back_plate_position-fixed_block_position)
@@ -414,6 +416,19 @@ module fixed_block()
 					translate(drive_assembly_position-back_plate_position)
 						m6_shaft(body=false,big_hole=7.5,  teardrop_angle=180);
 				}
+
+			translate([24.5,20.5,15])
+				difference()
+				{
+					translate([-2,0,0])
+						cube([9,8,20], center = true);
+					translate([-8,-4,0])
+						cube([16,8,30], center = true);
+					translate([0,-4/sin(45),0])
+						rotate([0,0,45])
+							cube([8,8,30], center = true);
+				}
+
 			translate([-2,0,back_plate_height-8])
 				cube([8,8,6], center = true);
 			translate([-2,0,back_plate_height-6])
@@ -433,12 +448,27 @@ module fixed_block()
 	}
 }
 
+module duct_split()
+{
+	translate([-40.11,0,0])
+	union()
+	{
+		cube([45,40,60],center=true);
+		translate([21,0,-20])
+			rotate([0,0,45])
+				cube([5,5,70],center=true);
+		translate([21,0,-10])
+			rotate([0,45,0])
+				cube([5,70,5],center=true);
+	}
+}
+
 module duct_i()
 {	
 	difference()
 	{
-		cube([45,29,50],center=true);
-		cube([41,25,46],center=true);
+		cube([45,20,50],center=true);
+		cube([41,16,46],center=true);
 		translate(fixed_block_position-duct_offset)
 			nozzle_holes(teardrop_angle=180);
 		translate([10,0,9])
@@ -458,16 +488,13 @@ module duct(split=0)
 		difference()
 		{
 			duct_i();
-			translate([-40,0,0])
-				cube([45,40,60],center=true);
+			duct_split();
 		}
-
 	else if(split==2)
 		intersection()
 		{
 			duct_i();
-			translate([-40,0,0])
-				cube([45,40,60],center=true);
+			duct_split();
 		}
 	else
 		duct_i();
@@ -528,30 +555,46 @@ module base_plate()
 		}
 	} else
 	{
-		difference()
+		union()
 		{
-			union()
+			difference()
 			{
+				union()
+				{
+					difference()
+					{
+						cube([36,54,5],center=true);
+						translate([0,-20,6])
+							rotate([3,0,0])
+								cube([40,30,7],center=true);
+					}
+					translate([0,0,4])
+						cube([36,28,9],center=true);
+				}
+				translate([0,0,10])
+				tie_rods();
+				cylinder(h=100, r=4, center=true,$fn=30);
+				for(i=[-1/2,1/2])
+				{
+					translate([0,i*46,0])
+						cylinder(h=100, r=2, center=true,$fn=10);
+					translate([0,i*56,0])
+						cube([4,10,100],center=true);
+				}
+			}
+			translate([24.5,0,10])
 				difference()
 				{
-					cube([36,54,5],center=true);
-					translate([0,-20,6])
-						rotate([3,0,0])
-							cube([40,30,7],center=true);
+					translate([-2,0,-4])
+						cube([9,20,17], center = true);
+					translate([-8,0,4])
+						cube([16,30,8], center = true);
+					translate([-10,0,1.5])
+						cube([16,30,18], center = true);
+					translate([0,0,4/sin(45)])
+						rotate([0,45,0])
+							cube([8,30,8], center = true);
 				}
-				translate([0,0,4])
-					cube([36,28,9],center=true);
-			}
-	
-			tie_rods();
-			cylinder(h=100, r=4, center=true,$fn=30);
-			for(i=[-1/2,1/2])
-			{
-				translate([0,i*46,0])
-					cylinder(h=100, r=2, center=true,$fn=10);
-				translate([0,i*56,0])
-					cube([4,10,100],center=true);
-			}
 		}
 	}
 }
@@ -648,25 +691,47 @@ module lever()
 
 module motor_plate()
 {
-	difference()
-	{
-		translate([-motor_plate_extra_x/2, 0, 0])
-			cube([36+motor_plate_extra_x,fat_plate_thickness,back_plate_height], center=true);
-		translate([-motor_plate_extra_x/2-23,0,-26])
-			cube([36,20,20], center=true);
-		translate([-motor_plate_extra_x/2-18.5,0,26])
-			cube([36,20,20], center=true);
-		translate(drive_assembly_position-motor_plate_position)
-			m6_shaft(body=false,big_hole=7.5, teardrop_angle=-1);
-		translate(drive_assembly_position-motor_plate_position)
-			drive_gear_and_motor(gear=false, holes=true);
-		translate(fixed_block_position-motor_plate_position)
-			block_holes(teardrop_angle=-1);
-	}
+		difference()
+		{
+			translate([-motor_plate_extra_x/2, 0, 0])
+				cube([36+motor_plate_extra_x,fat_plate_thickness,back_plate_height], center=true);
+			translate([-motor_plate_extra_x/2-23,0,-26])
+				cube([36,20,20], center=true);
+			translate([-motor_plate_extra_x/2-18.5,0,26])
+				cube([36,20,20], center=true);
+			translate(drive_assembly_position-motor_plate_position)
+				m6_shaft(body=false,big_hole=7.5, teardrop_angle=-1);
+			translate(drive_assembly_position-motor_plate_position)
+				drive_gear_and_motor(gear=false, holes=true);
+			translate(fixed_block_position-motor_plate_position)
+				block_holes(teardrop_angle=-1);
+			translate([0,-26,0]+fixed_block_position-motor_plate_position)
+				rotate([10,0,0])
+					cylinder(h=100,r=4, center=true,$fn=15);
+			translate(motor_plate_clip_position-motor_plate_position)
+				motor_plate_clip();
+		}
+
 }
 
-
-
+module motor_plate_clip()
+{
+	difference()
+	{
+		translate([-2,0,0])
+		{
+			cube([9,8,20], center = true);
+			translate([-4,0,0])
+				rotate([0,45,0])
+					cube([8,8,8], center = true);
+		}
+		translate([-8,4,0])
+			cube([16,8,30], center = true);
+		translate([0,4/sin(45),0])
+			rotate([0,0,45])
+				cube([8,8,30], center = true);
+	}
+}
 
 //------------------------------------------------------------------
 
@@ -710,13 +775,14 @@ if(huxley)
 translate(motor_plate_position)
 	motor_plate();
 
+translate(motor_plate_clip_position)
+	motor_plate_clip();
+
 translate(spacer_position)
 	motor_spacer();
 
 translate(lever_offset)
 	lever();
-
-
 
 translate(drive_assembly_position)
 	drive_assembly();
@@ -730,26 +796,27 @@ translate(accessories_position)
 
 
 
+
 // Individual built items
 
-//hob_jig();
-
-//hob_jig_handle();
-
-//fixed_block();
-
-//base_plate();
-
-//belt_clamp(); // 2 off
-
-//motor_plate();
-
-//motor_spacer();
-
-//drive_gear();
-
-//driven_gear(wingnut=true);
-
+// For Huxley
+//----
 //adjustable_bearing(true,-1); // 2 off
-
 //adjustable_bearing(false,-1);
+//belt_clamp(); // 2 off
+//----
+
+// For all
+
+//hob_jig();
+//hob_jig_handle();
+//duct(1);
+//duct(2);
+//fixed_block();
+//lever();
+//base_plate();
+//motor_plate();
+//motor_plate_clip();
+//motor_spacer();
+//drive_gear();
+//driven_gear(wingnut=true);

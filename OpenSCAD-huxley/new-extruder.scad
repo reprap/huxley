@@ -24,7 +24,10 @@ idler_offset=[5.5,0,0];
 lever_offset=[0,0,hub_z];
 bearing_offset=[5+filament_radius, 0, 0];
 
-lever_spring_offset=[-29,0,0];
+lever_spring_offset=[-39,5,back_plate_height+10];
+
+
+duct_offset=[-5.5,0,10];
 
 
 drive_assembly_position=[hub_x,filament_y_offset,hub_z];
@@ -33,7 +36,7 @@ back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_he
 motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
 motor_position=[-motor_radius*cos(motor_angle), 1, motor_radius*sin(motor_angle)];
 spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0];
-base_position=[0,0,-2.5];
+base_position=[0,0,-3.5];
 fan_position=[21.5,0,27];
 accessories_position=[0,0,0];
 clamp_position=[-12, -44, -9];
@@ -102,9 +105,12 @@ module tie_rods(radius=3/2,teardrop_angle=-1)
 	for(i=[-1/2,1/2])
 		translate([i*clamp_centres,0,-30])
 			if(teardrop_angle<0)
-				cylinder(h=200, r=radius, center=true,$fn=10);
+				cylinder(h=100, r=radius, center=true,$fn=10);
 			else
-				teardrop(h=200,r=radius, center=true,    teardrop_angle=teardrop_angle, truncateMM=0.5);
+				teardrop(h=100,r=radius, center=true,    teardrop_angle=teardrop_angle, truncateMM=0.5);
+
+	translate([-clamp_centres/2,0,10])
+	teardrop(h=10,r=3.5, center=true,    teardrop_angle=teardrop_angle, truncateMM=0.5);
 }
 
 
@@ -317,14 +323,15 @@ module drive_assembly()
 	m6_shaft(body=true, big_hole=7.5, teardrop_angle=-1);
 	driven_gear(wingnut=true);
 	drive_gear_and_motor();
-	translate(bearing_offset - [0,filament_y_offset,0])
+	translate(bearing_offset - [-3,filament_y_offset,0])
 		rotate([90,0,0])
 			cylinder(h=4, r=5, center=true, $fn=20);
 
 }
 
-module block_holes(teardrop_angle=-1)
+module block_holes(teardrop_angle=-1, lever = false)
 {
+
 	translate([-10, 0, 0])
 		rotate([90, 0, 0])
 		{
@@ -351,6 +358,18 @@ module block_holes(teardrop_angle=-1)
 				rotate([0,0,30])
 					cylinder(h = 20, r = screwsize, center=true, $fn=6);
 		}
+
+	translate([6, 0, 30])
+		rotate([90, 0, 0])
+		{
+			if(lever)
+				teardrop(h=80,r=2, center=true, teardrop_angle=teardrop_angle, faces=15);
+			else
+				teardrop(h=80,r=screwsize/2, center=true, teardrop_angle=teardrop_angle, faces=15);
+			translate([0, 0, 31])
+				rotate([0,0,30])
+					cylinder(h = 20, r = screwsize, center=true, $fn=6);
+		}
 }
 
 
@@ -367,6 +386,7 @@ module fixed_block()
 					cube([36,fixed_block_width,10], center=true);
 					translate([-11.5,0,14 + (back_plate_height - 38)/2])
 						cube([13,33,back_plate_height], center=true);
+					
 					difference()
 					{
 						translate([0,0,12])
@@ -377,10 +397,15 @@ module fixed_block()
 						translate([0,0,27])
 								cube([20,40,20], center = true);
 					}
+
 				}
-				nozzle_holes(teardrop_angle=180);
+				
 				translate(drive_assembly_position-fixed_block_position)
 					m6_shaft(body=false,big_hole=4, teardrop_angle=-1);
+				translate([-10,0,19])
+					rotate([0,-30,0])
+						cube([50,25,13], center=true);
+				
 			}
 			translate(back_plate_position-fixed_block_position)
 				difference()
@@ -389,13 +414,64 @@ module fixed_block()
 					translate(drive_assembly_position-back_plate_position)
 						m6_shaft(body=false,big_hole=7.5,  teardrop_angle=180);
 				}
+			translate([-2,0,back_plate_height-8])
+				cube([8,8,6], center = true);
+			translate([-2,0,back_plate_height-6])
+				cube([7,33,2], center = true);
+			translate([-14.5,5,back_plate_height])
+				cube([7,10,10], center = true);
 				
 		}
+		nozzle_holes(teardrop_angle=180);
+		if(mendel)
+		translate([0,26,0])
+			rotate([-10,0,0])
+				cylinder(h=100,r=4, center=true,$fn=15);
 		block_holes(teardrop_angle=180);
+		translate(lever_spring_offset-fixed_block_position)
+			lever_spring();
 	}
 }
 
+module duct_i()
+{	
+	difference()
+	{
+		cube([45,29,50],center=true);
+		cube([41,25,46],center=true);
+		translate(fixed_block_position-duct_offset)
+			nozzle_holes(teardrop_angle=180);
+		translate([10,0,9])
+			cube([45,40,50],center=true);
+		translate([39,0,0])
+			cube([45,40,60],center=true);
+		translate(drive_assembly_position-duct_offset+[0,-5,0])
+			drive_gear_and_motor(gear=false, holes=false);
+		translate(fixed_block_position-duct_offset)
+			teardrop(h=100, r=5, center=true,teardrop_angle=180, truncateMM=0.5);
+	}
+}
 
+module duct(split=0)
+{
+	if(split==1)
+		difference()
+		{
+			duct_i();
+			translate([-40,0,0])
+				cube([45,40,60],center=true);
+		}
+
+	else if(split==2)
+		intersection()
+		{
+			duct_i();
+			translate([-40,0,0])
+				cube([45,40,60],center=true);
+		}
+	else
+		duct_i();
+}
 
 module bracket_holes(teardrop_angle=-1)
 {
@@ -458,13 +534,13 @@ module base_plate()
 			{
 				difference()
 				{
-					cube([35,60,5],center=true);
+					cube([36,54,5],center=true);
 					translate([0,-20,6])
 						rotate([3,0,0])
 							cube([40,30,7],center=true);
 				}
 				translate([0,0,4])
-					cube([35,28,7],center=true);
+					cube([36,28,9],center=true);
 			}
 	
 			tie_rods();
@@ -482,84 +558,87 @@ module base_plate()
 
 module bearing_hole()
 {
+
 	rotate([90,0,0])
-	{
-		translate([0,0,-15])
-		{
-			teardrop(h=35,r=screwsize/2, center=false,   teardrop_angle=0,truncateMM=0.5);
-			translate([0,0,-19.5])
-				teardrop(h=30,r=screwsize, center=false,   teardrop_angle=0,truncateMM=0.5);
-			translate([0,0,30])
-				pentanut(height=20, center=true);
-		}
-		cylinder(h=5.5,r=6,center=true, $fn=20);
-		translate([-5,0,0])
-			cube([11,12,5.5],center=true);
-	}
+		teardrop(h=100,r=screwsize/2, center=true,   teardrop_angle=180,truncateMM=0.5);
+	translate([0,43,0])
+		rotate([90,0,0])
+			teardrop(h=30,r=screwsize, center=false,   teardrop_angle=180,truncateMM=0.5);
+	translate([0,-23,0])
+		rotate([90,180,0])
+			pentanut(height=20, center=true);	
 }
 
 
 module lever_spring()
 {
-	translate([0,0,-30])
+	rotate([0,90,0])
 	union()
 	{
-		teardrop(h=200, r=2,teardrop_angle=0,truncateMM=0.5);
-			translate([0,0,31])
-				rotate([0,0,90])
-					pentanut(height=10, center=true);
+		cylinder(h=200, r=2,$fn=10);
+		translate([0,0,31])
+			cylinder(r=3.5,h=10, center=true, $fn=6);
+		translate([0,0,40])
+			cylinder(r=4,h=14, center=true, $fn=15);
+		translate([0,0,48.5])
+			cylinder(r1=4,r2=2,h=3, center=true, $fn=15);
+	}
+}
+
+module bevel_cube(box)
+{
+	difference()
+	{
+		cube(box, center=true);
+
+		translate([0,(box.y-box.x)/2,0])
+			rotate([0,0,45])
+				translate([0, box.y/2,0])
+					cube([2*box.x, box.y, 2*box.z], center=true);
+
+		translate([0,-(box.y-box.x)/2,0])
+			rotate([0,0,-45])
+				translate([0, -box.y/2,0])
+					cube([2*box.x, box.y, 2*box.z], center=true);
+
+		translate([0,0,(box.z-box.x)/2])
+			rotate([0,-45,0])
+				translate([0, 0, box.z/2])
+					cube([2*box.x, 2*box.y, box.z], center=true);
 	}
 }
 
 module lever()
 {
+
+
+
 	difference()
 	{
-	translate([0,0,12])
-		cube([65,15,40], center=true);
+	translate([8.5,0,15])
+		cube([12,32,40], center=true);
 
-	translate([-8,0,13])
+	translate([8.5,-10,36])
+		rotate([20,0,0])
+			cube([20,32,30], center=true);
+
+	translate([8.5,19,36])
+		rotate([60,0,0])
+			cube([20,32,30], center=true);
+
+
+	translate([10,0,-3])
 	{
-		rotate([90, 0, 0])
-			cylinder(r=10, h=20 , center=true);
-		translate([-25,0,-10])
-			cube([50,20,40], center=true);
-		translate([-10,0,-25])
-			cube([40,20,50], center=true);
+		cube([30,18,20], center=true);
+		translate([-3,0,0])
+			bevel_cube(box=[15,28,30]);
 	}
 
-	translate([32,0,10])
-			cube([30,20,60], center=true);
-
-	translate([32,0,23])
-			rotate([0,-45,0])
-				cube([30,20,60], center=true);
-
-	translate([-5,0,-10])
-			rotate([0,-45,0])
-				cube([20,20,20], center=true);
-
-	translate([23,0,-10])
-			rotate([0,-45,0])
-				cube([20,20,20], center=true);
-
+	translate(fixed_block_position-lever_offset)
+		block_holes(teardrop_angle=180, lever=true);
 
 	translate(bearing_offset)
 		bearing_hole();
-
-
-	teardrop(h=200, r=filament_radius*1.5,teardrop_angle=0,truncateMM=0.5);
-
-
-/*	translate(drive_offsetdrive_assembly_position-lever_offset)
-		rotate([90,0,0])
-			translate([0,0,-22])
-				cylinder(h=100, r=7.5, center=true,$fn=20);
-*/
-/*	translate([0.5*nema17_screws, 0, 0.5*nema17_screws]+drive_offset-lever_offset)
-	rotate([90,0,0])
-		translate([0,0,-100])
-			teardrop(h=200, r=2,teardrop_angle=0,truncateMM=0.5);*/
 
 	translate(lever_spring_offset-lever_offset)
 		lever_spring();
@@ -617,36 +696,36 @@ translate(clamp_position)
 
 translate(fixed_block_position)
 	fixed_block();
-/*
-//translate(base_position)
-//	base_plate();
+
+translate(duct_offset)
+	duct();
+
+translate(base_position)
+	base_plate();
 
 if(huxley)
 	translate(clamp_position)
 		belt_clamp();
-
 
 translate(motor_plate_position)
 	motor_plate();
 
 translate(spacer_position)
 	motor_spacer();
-*/
+
 translate(lever_offset)
 	lever();
 
-translate(bearing_offset)
-	rotate([90,0,0])
-		cylinder(h=4, r=5, center=true, $fn=20);
+
 
 translate(drive_assembly_position)
 	drive_assembly();
 
-//translate(fan_position)
-//	fan();
+translate(fan_position)
+	fan();
 
-//translate(accessories_position)
-//	accessories();
+translate(accessories_position)
+	accessories();
 //-----------------------------------------------------------------
 
 

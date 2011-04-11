@@ -16,32 +16,52 @@ hob_gap=55;
 motor_radius=34;
 
 filament_radius=1.75/2;
-
 hub_x=-3-filament_radius;
 hub_z=31;
+
 idler_offset=[5.5,0,0];
-
-lever_offset=[0,0,hub_z];
 bearing_offset=[5+filament_radius, 0, 0];
-
 lever_spring_offset=[-39,5,back_plate_height+10];
-
-
-duct_offset=[-5.5,0,10];
-
-
-drive_assembly_position=[hub_x,filament_y_offset,hub_z];
-fixed_block_position=[0,0,10];
 back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
-motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
 motor_position=[-motor_radius*cos(motor_angle), 1, motor_radius*sin(motor_angle)];
-spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0];
+
+
+
+fixed_block_position=[0,0,10];
+duct_offset=[-5.5,0,10];
 base_position=[0,0,-3.5];
+clamp_position=[-12, -44, -9];
+drive_assembly_position=[hub_x,filament_y_offset,hub_z];
+motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
+motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position;
+spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0];
+lever_offset=[0,0,hub_z];
 fan_position=[21.5,0,27];
 accessories_position=[0,0,0];
-clamp_position=[-12, -44, -9];
+motor_add=[0, 0, 0];
+gear_add=[0, 0, 0];
+bearing_add=[0, 0, 0];
 
-motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position;
+
+/*
+//--- Experimental exploded view
+fixed_block_position=[0,0,10];
+duct_offset=[-5.5,0,10] + [0, 0, -70];
+base_position=[0,0,-3.5] + [0, 0, -20];
+clamp_position=[-12, -44, -9] + [0, -40, 0];
+drive_assembly_position=[hub_x,filament_y_offset,hub_z] + [0, 0, 0];
+motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2] + [0, -20, 0];
+motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position + [45, 0, 0];
+spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0] + [0, 0, 0];
+lever_offset=[0,0,hub_z] + [0, 0, 35];
+fan_position=[21.5,0,27] + [30, 0, 0];
+accessories_position=[0,0,0] + [0, 0, 0];
+motor_add=[0, 0, -20];
+gear_add=[0, -40, 0];
+bearing_add=[0, 0, 30];
+*/
+
+
 
 
 
@@ -248,7 +268,7 @@ module drive_gear_and_motor(gear=true, holes=false)
 			rotate([90,gear_mesh,0])
 				drive_gear();
 		
-		translate([0, 12,0])
+		translate([0, 12,0]+motor_add)
 			rotate([-90,0,0])
 		 		nema11(body=!holes, slots = -1, counterbore=8);
 	}
@@ -307,13 +327,15 @@ module m6_shaft(body=true,big_hole=7.5, teardrop_angle=-1)
 
 			translate([0,0,bearing_gap+22])
 				if(body)
-					cylinder(h=6,r=9.5,center=true);
+					translate(bearing_add)
+						cylinder(h=6,r=9.5,center=true);
 				else
 					teardrop(h=6.2,r=10,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
 
 			translate([0,0,22])
 				if(body)
-					cylinder(h=6,r=9.5,center=true);
+					translate(-bearing_add)
+						cylinder(h=6,r=9.5,center=true);
 				else
 					teardrop(h=6.2,r=10,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
 		}	
@@ -323,8 +345,11 @@ module m6_shaft(body=true,big_hole=7.5, teardrop_angle=-1)
 module drive_assembly()
 {
 	m6_shaft(body=true, big_hole=7.5, teardrop_angle=-1);
-	driven_gear(wingnut=true);
-	drive_gear_and_motor();
+	translate(gear_add)
+	{
+		driven_gear(wingnut=true);
+		drive_gear_and_motor();
+	}
 	translate(bearing_offset - [-3,filament_y_offset,0])
 		rotate([90,0,0])
 			cylinder(h=4, r=5, center=true, $fn=20);

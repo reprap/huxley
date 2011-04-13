@@ -1,3 +1,13 @@
+/*
+
+RepRap Universal 1.75mm Filament Extruder
+
+Adrian Bowyer  13 April 2011
+
+Licence: GPL.
+
+*/
+
 include <parameters.scad>;
 use <library.scad>;
 

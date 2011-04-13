@@ -6,36 +6,40 @@ Adrian Bowyer  13 April 2011
 
 Licence: GPL.
 
+if the variable huxley is true in parameters.scad the Huxley version is built.  If it is false the Mendel version is built.
+
+Items labelled VITAMIN are not reprapped parts, but are added components modelled here
+for dimension checking and visualisation.
+
 */
 
 include <parameters.scad>;
 use <library.scad>;
 
-motor_angle=-10;
-gear_mesh=7;
-clamp_centres=28;
-plate_thickness=5;
-fat_plate_thickness=8;
-filament_y_offset=-27;
-bearing_gap=44;
-idler_z = 31;
-fixed_block_width=33;
-back_plate_height=41;
-motor_plate_extra_x=35;
-hob_gap=55;
-motor_radius=34;
+motor_angle=-10;		// The angle to the horizontal of a line joining the motor axis to the filament drive axis
+gear_mesh=2;			// Cosmetic - angle to make the gears mesh
+clamp_centres=28;		// Distance between the vertical M3 rods that hold the hot end on
+plate_thickness=5;		// The thickness of some of the components, cf. ...
+fat_plate_thickness=8;	// ...thicker components...
+filament_y_offset=-27;	// How far from the gear assembly etc to the filament (which runs down the Z axis)
+bearing_gap=44;		// The gap between the 6mm id bearings on the driven shaft
+fixed_block_width=33;	// The width of the main block
+back_plate_height=41;	// Back plate height of the main block
+motor_plate_extra_x=35;	// How much longer the motor plate is than the rest
+hob_gap=55;			// Bearing gaps on the hobbing jig
+motor_radius=34;		// How far out is the motor from the centre of the driven shaft
+filament_radius=1.75/2;	// The name says it...
+hub_x=-3-filament_radius;	// How far from the Z axix is the driven shaft (which is 6mm in diameter)
+hub_z=31;				// Relative Z position of the drive assembly
 
-filament_radius=1.75/2;
-hub_x=-3-filament_radius;
-hub_z=31;
+
+// Offsets to put items in the right relative positions
 
 idler_offset=[5.5,0,0];
 bearing_offset=[5+filament_radius, 0, 0];
 lever_spring_offset=[-39,5,back_plate_height+10];
 back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
 motor_position=[-motor_radius*cos(motor_angle), 1, motor_radius*sin(motor_angle)];
-
-
 
 fixed_block_position=[0,0,10];
 duct_offset=[-5.5,0,10];
@@ -55,6 +59,7 @@ bearing_add=[0, 0, 0];
 
 /*
 //--- Experimental exploded view
+
 fixed_block_position=[0,0,10];
 duct_offset=[-5.5,0,10] + [0, 0, -70];
 base_position=[0,0,-3.5] + [0, 0, -20];
@@ -71,9 +76,9 @@ gear_add=[0, -40, 0];
 bearing_add=[0, 0, 30];
 */
 
+// *********************************************************************************************
 
-
-
+// The holes in the hobbing jig as solids
 
 module hob_jig_holes(teardrop_angle=-1)
 {
@@ -102,6 +107,8 @@ module hob_jig_holes(teardrop_angle=-1)
 		}	
 
 }
+
+// The hobbing jig.  This is not part of the extruder.  It allows the M6 bolt to be hobbed in a lathe or with an electric drill.
 
 module hob_jig()
 {
@@ -132,6 +139,10 @@ module hob_jig_handle()
 	}
 }
 
+// **********************************************************************************************************************
+
+// The M3 rods that hold the hot end on
+
 module tie_rods(radius=3/2,teardrop_angle=-1)
 {
 	for(i=[-1/2,1/2])
@@ -142,9 +153,10 @@ module tie_rods(radius=3/2,teardrop_angle=-1)
 				teardrop(h=100,r=radius, center=true,    teardrop_angle=teardrop_angle, truncateMM=0.5);
 
 	translate([-clamp_centres/2,0,10])
-	teardrop(h=10,r=3.5, center=true,    teardrop_angle=teardrop_angle, truncateMM=0.5);
+	teardrop(h=10,r=3.9, center=true,    teardrop_angle=teardrop_angle, truncateMM=0.5);
 }
 
+// The vertical holes associated with the filament in the Z direction
 
 module nozzle_holes(teardrop_angle=-1)
 {
@@ -158,6 +170,8 @@ module nozzle_holes(teardrop_angle=-1)
 
 }
 
+// The screw holes in the fan.  Not used in the design.
+
 module fan_holes()
 {
 	for(y=[-16,16])
@@ -166,6 +180,8 @@ module fan_holes()
 			rotate([0,90,0])
 				cylinder(h=100, r=1.5, center=true,$fn=15);
 }
+
+// The fan.  VITAMIN 
 
 module fan(holes=false)
 {
@@ -180,6 +196,8 @@ module fan(holes=false)
 		fan_holes();
 	}
 }
+
+// Some other non-reprapped VITAMIN s
 
 module accessories(holes=false,  teardrop_angle=270)
 {
@@ -250,6 +268,8 @@ module accessories(holes=false,  teardrop_angle=270)
 }
 
 
+// Gets the motor in the right place, and also forms a clamp for the PCB/stripboard for
+// the connectors
 
 module motor_spacer()
 {
@@ -264,11 +284,16 @@ module motor_spacer()
 		}
 }
 
+
+// The gear that goes on the motor's shaft
+
 module drive_gear()
 {
 	grub_gear(hub_height = 7, hub_radius = 9.5, shaft_radius = 2.5, height = 8, number_of_teeth = 11, 
 		inner_radius = 6.5, outer_radius = 9, angle=25);
 }
+
+// The motor with its gear
 
 module drive_gear_and_motor(gear=true, holes=false)
 {
@@ -284,6 +309,8 @@ module drive_gear_and_motor(gear=true, holes=false)
 	}
 }
 
+// The gear that goes on the driven shaft - the shaft that moives the filament
+
 module driven_gear(wingnut=false)
 {
 	translate([0,-7,0])
@@ -293,7 +320,7 @@ module driven_gear(wingnut=false)
 		union()
 		{
 			grub_gear(hub_height = 10, hub_radius = 10, shaft_radius = 3, height = 7, 
-				number_of_teeth = 31, inner_radius = motor_radius-10, outer_radius = motor_radius-7, angle=15);
+				number_of_teeth = 37, inner_radius = motor_radius-10, outer_radius = motor_radius-7, angle=15);
 			if(wingnut)
 				difference()
 				{
@@ -320,6 +347,9 @@ module driven_gear(wingnut=false)
 		}
 	}
 }
+
+
+// The shaft that moves the filament
 
 module m6_shaft(body=true,big_hole=7.5, teardrop_angle=-1)
 {
@@ -352,6 +382,8 @@ module m6_shaft(body=true,big_hole=7.5, teardrop_angle=-1)
 	}
 }
 
+// The motor, the driven shaft, and their associated components
+
 module drive_assembly()
 {
 	m6_shaft(body=true, big_hole=7.5, teardrop_angle=-1);
@@ -365,6 +397,9 @@ module drive_assembly()
 			cylinder(h=4, r=5, center=true, $fn=20);
 
 }
+
+// The holes in the main block and motor plate through which M3 threaded rods are passed
+// to hold the extruder together.
 
 module block_holes(teardrop_angle=-1, lever = false)
 {
@@ -410,6 +445,8 @@ module block_holes(teardrop_angle=-1, lever = false)
 }
 
 
+// The main block of the extruder
+
 module fixed_block()
 {
 	difference()
@@ -441,7 +478,7 @@ module fixed_block()
 					m6_shaft(body=false,big_hole=4, teardrop_angle=-1);
 				translate([-10,0,19])
 					rotate([0,-30,0])
-						cube([50,20,13], center=true);
+						cube([50,18,13], center=true);
 				
 			}
 			translate(back_plate_position-fixed_block_position)
@@ -483,6 +520,10 @@ module fixed_block()
 	}
 }
 
+
+// A solid that is not part of the model, but that is intersected with, or subtracted from, the duct to
+// split it in two for easy reprapping
+
 module duct_split()
 {
 	translate([-40.11,0,0])
@@ -497,6 +538,8 @@ module duct_split()
 				cube([5,70,5],center=true);
 	}
 }
+
+// The duct (internal module call)
 
 module duct_i()
 {	
@@ -517,6 +560,8 @@ module duct_i()
 	}
 }
 
+// Call this to make the duct.  split = 0 gives it all; split = 1 gives the first half; split = 2 gives the second
+
 module duct(split=0)
 {
 	if(split==1)
@@ -534,6 +579,9 @@ module duct(split=0)
 	else
 		duct_i();
 }
+
+
+// Holes for the Huxley version.  These are where the belt clamps attach.
 
 module bracket_holes(teardrop_angle=-1)
 {
@@ -553,6 +601,8 @@ module bracket_holes(teardrop_angle=-1)
 }
 
 
+// The tothed belt clamp - only used for the Huxley version
+
 module belt_clamp()
 {
 	difference()
@@ -563,6 +613,8 @@ module belt_clamp()
 			bracket_holes(teardrop_angle=-1);
 	}
 }
+
+// The base plate - both Huxley and Mendel variants
 
 module base_plate()
 {
@@ -608,7 +660,7 @@ module base_plate()
 				}
 				translate([0,0,10])
 				tie_rods();
-				cylinder(h=100, r=4, center=true,$fn=30);
+				cylinder(h=100, r=4.25, center=true,$fn=30);
 				for(i=[-1/2,1/2])
 				{
 					translate([0,i*46,0])
@@ -634,6 +686,8 @@ module base_plate()
 	}
 }
 
+// The holes through the filament-clamping lever
+
 module bearing_hole()
 {
 
@@ -647,6 +701,8 @@ module bearing_hole()
 			pentanut(height=20, center=true);	
 }
 
+
+// The holes for the spring on the filament-clamping lever
 
 module lever_spring()
 {
@@ -662,6 +718,8 @@ module lever_spring()
 			cylinder(r1=4,r2=2,h=3, center=true, $fn=15);
 	}
 }
+
+// the venturi air intake into the filament-clamping lever
 
 module bevel_cube(box)
 {
@@ -685,6 +743,9 @@ module bevel_cube(box)
 					cube([2*box.x, 2*box.y, box.z], center=true);
 	}
 }
+
+
+// The filament-clamping lever
 
 module lever()
 {
@@ -724,6 +785,8 @@ module lever()
 
 }
 
+// The plate to which the motor is attached
+
 module motor_plate()
 {
 		difference()
@@ -749,6 +812,9 @@ module motor_plate()
 
 }
 
+
+// The clip on the motor plate that holds the fan - reprap separately then glue on
+
 module motor_plate_clip()
 {
 	difference()
@@ -767,6 +833,8 @@ module motor_plate_clip()
 				cube([8,8,30], center = true);
 	}
 }
+
+
 
 //------------------------------------------------------------------
 
@@ -832,7 +900,9 @@ translate(accessories_position)
 
 
 
+
 // Individual built items
+// Uncomment these one by one, then save the results as STL files
 
 // For Huxley
 //----

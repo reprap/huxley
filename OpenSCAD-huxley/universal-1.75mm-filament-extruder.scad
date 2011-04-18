@@ -41,17 +41,19 @@ lever_spring_offset=[-39,5,back_plate_height+10];
 back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
 motor_position=[-motor_radius*cos(motor_angle), 1, motor_radius*sin(motor_angle)];
 
+base_shift=[-2,0,3];
+
 fixed_block_position=[0,0,10];
 duct_offset=[-5.5,0,10];
-base_position=[0,0,-3.5];
-clamp_position=[-12, -44, -12];
+base_position=[0,0,-3.5] + base_shift;
+clamp_position=[-12, -44, -12] + base_shift;
 drive_assembly_position=[hub_x,filament_y_offset,hub_z];
 motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
 motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position;
 spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0];
 lever_offset=[0,0,hub_z];
 fan_position=[21.5,0,27];
-accessories_position=[0,0,-3.2];
+accessories_position=[0,0,-3.2] + base_shift;
 motor_add=[0, 0, 0];
 gear_add=[0, 0, 0];
 bearing_add=[0, 0, 0];
@@ -70,7 +72,7 @@ motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position + [45, 0, 0];
 spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0] + [0, 0, 0];
 lever_offset=[0,0,hub_z] + [0, 0, 35];
 fan_position=[21.5,0,27] + [30, 0, 0];
-accessories_position=[0,0,0] + [0, 0, 0];
+accessories_position=[0,0,-3.2] + [0, 0, 0];
 motor_add=[0, 0, -20];
 gear_add=[0, -40, 0];
 bearing_add=[0, 0, 30];
@@ -199,10 +201,11 @@ module fan(holes=false)
 
 // Some other non-reprapped VITAMIN s
 
-module accessories(holes=false,  teardrop_angle=270)
+module accessories(holes=false,  teardrop_angle=361)
 {
 
 	if(huxley)
+	{
 		translate([0,0,-bearing_depth/2])
 		{
 
@@ -229,7 +232,7 @@ module accessories(holes=false,  teardrop_angle=270)
 							if(holes)
 								adjustable_bearing(true,  teardrop_angle);
 							else
-								adjustable_bearing(true,-1);
+								adjustable_bearing(true, -1);
 		
 			}
 
@@ -242,24 +245,15 @@ module accessories(holes=false,  teardrop_angle=270)
 					else
 						adjustable_bearing(false,-1);
 		}
-
-	if(holes)
+	} else
 	{
-	
-		// Nozzle
-	
-		translate([0, 0, -23+plate_thickness])
-		cylinder(h=46,r=4,center=true, $fn=15);
-		nozzle_holes();
-
-		if(mendel)
+		if(holes)
 		{
 			for(i=[-1,1])
 				translate([20, i*25, 0])
 					cylinder(h=50,r=2,center=true, $fn=15);
 		}
 	}
-
 }
 
 
@@ -452,7 +446,8 @@ module fixed_block()
 			{
 				union()
 				{
-					cube([36,fixed_block_width,10], center=true);
+					translate([0,0,0])
+						cube([36,fixed_block_width,10], center=true);
 					translate([-11.5,0,14 + (back_plate_height - 38)/2])
 						cube([13,33,back_plate_height], center=true);
 					
@@ -602,8 +597,7 @@ module belt_clamp()
 {
 	difference()
 	{
-		translate([0, 0, 0])
-			cube([8,5,18], center=true);
+		cube([8,5,18], center=true);
 		translate(base_position-clamp_position)
 			bracket_holes(teardrop_angle=-1);
 	}
@@ -615,23 +609,36 @@ module base_plate()
 {
 	if(huxley)
 	{
-
 		difference()
 		{
 			union()
 			{
 				translate([0, 0, plate_thickness/2])
 					cube([70,60,plate_thickness], center=true);
-				if(huxley)
-					translate([0, -29,-8.5+plate_thickness/2])
-						difference()
-						{
-							cube([32, 20, 22], center=true);
-							translate([0, 8, -4])
-								cube([40, 20, 20], center=true);
-						}
+				translate([-6, 0, -2])
+					cube([34,20,7], center=true);
+				translate([0, -29,-8.5+plate_thickness/2])
+					difference()
+					{
+						cube([32, 20, 22], center=true);
+						translate([0, 8, -4])
+							cube([40, 20, 20], center=true);
+					}
 			}
-			accessories(holes=true, angle=361);
+
+			translate([-21, 0, 0])
+				cube([10.5,21,30], center=true);
+
+			// Nozzle
+		
+			translate([0, 0, -23+plate_thickness]-base_position)
+				cylinder(h=46,r=4,center=true, $fn=15);
+
+			translate(-base_position)
+				nozzle_holes();
+
+			translate(accessories_position-base_position)
+				accessories(holes=true,  teardrop_angle=361);
 	
 			bracket_holes(teardrop_angle=90);
 		}
@@ -857,39 +864,39 @@ translate(clamp_position)
 
 // Uncomment to get entire assembly
 
-//translate(fixed_block_position)
-//	fixed_block();
+translate(fixed_block_position)
+	fixed_block();
 
-translate(duct_offset)
-	duct();
+//translate(duct_offset)
+//	duct();
 
 translate(base_position)
 	base_plate();
 
-if(huxley)
-	translate(clamp_position)
-		belt_clamp();
+//if(huxley)
+//	translate(clamp_position)
+//		belt_clamp();
 
 //translate(motor_plate_position)
 //	motor_plate();
-/*
-translate(motor_plate_clip_position)
-	motor_plate_clip();
 
-translate(spacer_position)
-	motor_spacer();
+//translate(motor_plate_clip_position)
+//	motor_plate_clip();
 
-translate(lever_offset)
-	lever();
+//translate(spacer_position)
+//	motor_spacer();
+
+//translate(lever_offset)
+//	lever();
 
 translate(drive_assembly_position)
 	drive_assembly();
 
-translate(fan_position)
-	fan();
-*/
-translate(accessories_position)
-	accessories();
+//translate(fan_position)
+//	fan();
+
+//translate(accessories_position)
+//	accessories();
 //-----------------------------------------------------------------
 
 

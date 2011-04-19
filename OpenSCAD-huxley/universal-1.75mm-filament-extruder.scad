@@ -31,6 +31,7 @@ motor_radius=34;		// How far out is the motor from the centre of the driven shaf
 filament_radius=1.75/2;	// The name says it...
 hub_x=-3-filament_radius;	// How far from the Z axix is the driven shaft (which is 6mm in diameter)
 hub_z=31;				// Relative Z position of the drive assembly
+fan_thickness=10;		// Some are 7; some are 10...
 
 
 // Offsets to put items in the right relative positions
@@ -41,19 +42,17 @@ lever_spring_offset=[-39,5,back_plate_height+10];
 back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
 motor_position=[-motor_radius*cos(motor_angle), 1, motor_radius*sin(motor_angle)];
 
-base_shift=[-2,0,3];
-
 fixed_block_position=[0,0,10];
 duct_offset=[-5.5,0,10];
-base_position=[0,0,-3.5] + base_shift;
-clamp_position=[-12, -44, -12] + base_shift;
+base_position=[0,0,-3.5];
+clamp_position=[-12, -44, -9];
 drive_assembly_position=[hub_x,filament_y_offset,hub_z];
 motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
 motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position;
 spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0];
 lever_offset=[0,0,hub_z];
-fan_position=[21.5,0,27];
-accessories_position=[0,0,-3.2] + base_shift;
+fan_position=[21.5 + (fan_thickness-7)/2,0,27];
+accessories_position=[0,0,0];
 motor_add=[0, 0, 0];
 gear_add=[0, 0, 0];
 bearing_add=[0, 0, 0];
@@ -72,7 +71,7 @@ motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position + [45, 0, 0];
 spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0] + [0, 0, 0];
 lever_offset=[0,0,hub_z] + [0, 0, 35];
 fan_position=[21.5,0,27] + [30, 0, 0];
-accessories_position=[0,0,-3.2] + [0, 0, 0];
+accessories_position=[0,0,0] + [0, 0, 0];
 motor_add=[0, 0, -20];
 gear_add=[0, -40, 0];
 bearing_add=[0, 0, 30];
@@ -192,20 +191,24 @@ module fan(holes=false)
 	else
 	difference()
 	{
-		cube([7,40,40], center=true);
+		cube([fan_thickness,40,40], center=true);
 		rotate([0,90,0])
-			cylinder(h=10, r=17, center=true,$fn=35);
+			cylinder(h=20, r=17, center=true,$fn=35);
 		fan_holes();
 	}
 }
 
 // Some other non-reprapped VITAMIN s
 
-module accessories(holes=false,  teardrop_angle=361)
+module accessories(holes=false,  teardrop_angle=270)
 {
 
+	// Fan
+
+	translate(fan_position)
+		fan();
+
 	if(huxley)
-	{
 		translate([0,0,-bearing_depth/2])
 		{
 
@@ -227,33 +230,42 @@ module accessories(holes=false,  teardrop_angle=361)
 				//360 bearings
 		
 		
-					translate([i*30, -x_bar_gap/2, 0])
+					translate([i*20, -x_bar_gap/2, 0])
 						rotate([90,0,-90])
 							if(holes)
 								adjustable_bearing(true,  teardrop_angle);
 							else
-								adjustable_bearing(true, -1);
+								adjustable_bearing(true,-1);
 		
 			}
 
 		// 180 bearing
 	
-			translate([30, x_bar_gap/2, 0])
+			translate([20, x_bar_gap/2, 0])
 				rotate([90, 0,90])
 					if(holes)
 						adjustable_bearing(false,  teardrop_angle);
 					else
 						adjustable_bearing(false,-1);
 		}
-	} else
+
+	if(holes)
 	{
-		if(holes)
+	
+		// Nozzle
+	
+		translate([0, 0, -23+plate_thickness])
+		cylinder(h=46,r=4,center=true, $fn=15);
+		nozzle_holes();
+
+		if(mendel)
 		{
 			for(i=[-1,1])
 				translate([20, i*25, 0])
 					cylinder(h=50,r=2,center=true, $fn=15);
 		}
 	}
+
 }
 
 
@@ -446,10 +458,10 @@ module fixed_block()
 			{
 				union()
 				{
-					translate([0,0,0])
-						cube([36,fixed_block_width,10], center=true);
-					translate([-11.5,0,14 + (back_plate_height - 38)/2])
-						cube([13,33,back_plate_height], center=true);
+					translate([0,0,-1.5])
+						cube([36,fixed_block_width,13], center=true);
+					translate([-11.5,0,12.5 + (back_plate_height - 38)/2])
+						cube([13,33,back_plate_height+3], center=true);
 					
 					difference()
 					{
@@ -474,21 +486,24 @@ module fixed_block()
 			translate(back_plate_position-fixed_block_position)
 				difference()
 				{
-					cube([36,fat_plate_thickness,back_plate_height], center=true);
+					translate([0,0,-1.5])
+						cube([36,fat_plate_thickness,back_plate_height+3], center=true);
 					translate(drive_assembly_position-back_plate_position)
 						m6_shaft(body=false,big_hole=7.5,  teardrop_angle=180);
 				}
 
+			// Fan clip
+
 			translate([24.5,20.5,15])
 				difference()
 				{
-					translate([-2,0,0])
-						cube([9,8,20], center = true);
-					translate([-8,-4,0])
-						cube([16,8,30], center = true);
-					translate([0,-4/sin(45),0])
+					translate([-2+(fan_thickness-7)/2,0,0])
+						cube([9+fan_thickness-7,8,20], center = true);
+					translate([-7+fan_thickness-7,-4,0])
+						cube([14,8,30], center = true);
+					translate([fan_thickness-7,-4.5/sin(45),0])
 						rotate([0,0,45])
-							cube([8,8,30], center = true);
+							cube([9,9,30], center = true);
 				}
 
 			translate([-2,0,back_plate_height-8])
@@ -597,7 +612,8 @@ module belt_clamp()
 {
 	difference()
 	{
-		cube([8,5,18], center=true);
+		translate([0, 0, 0])
+			cube([8,5,18], center=true);
 		translate(base_position-clamp_position)
 			bracket_holes(teardrop_angle=-1);
 	}
@@ -609,6 +625,7 @@ module base_plate()
 {
 	if(huxley)
 	{
+
 		difference()
 		{
 			union()
@@ -642,6 +659,26 @@ module base_plate()
 	
 			bracket_holes(teardrop_angle=90);
 		}
+		/*difference()
+		{
+			union()
+			{
+				translate([0, 0, plate_thickness/2])
+					cube([50,60,plate_thickness], center=true);
+				if(huxley)
+					translate([0, -29,-8.5+plate_thickness/2])
+						difference()
+						{
+							cube([32, 20, 22], center=true);
+							translate([0, 8, -4])
+								cube([40, 20, 20], center=true);
+						}
+			}
+			accessories(holes=true, angle=361);
+	
+			translate(bracket_position-base_position)
+				bracket_holes(teardrop_angle=90);
+		}*/
 	} else
 	{
 		union()
@@ -671,18 +708,19 @@ module base_plate()
 						cube([4,10,100],center=true);
 				}
 			}
+
 			translate([24.5,0,10])
 				difference()
 				{
-					translate([-2,0,-4])
-						cube([9,20,17], center = true);
-					translate([-8,0,4])
-						cube([16,30,8], center = true);
-					translate([-10,0,1.5])
-						cube([16,30,18], center = true);
-					translate([0,0,4/sin(45)])
+					translate([-2+(fan_thickness-7)/2,0,-4])
+						cube([9+fan_thickness-7,20,17], center = true);
+					translate([-7+fan_thickness-7,0,4])
+						cube([14,30,8], center = true);
+					translate([-10+(fan_thickness-7)/2,0,1.5])
+						cube([16+fan_thickness-7,30,18], center = true);
+					translate([fan_thickness-7, 0, 4.5/sin(45)])
 						rotate([0,45,0])
-							cube([8,30,8], center = true);
+							cube([9,30,9], center = true);
 				}
 		}
 	}
@@ -793,8 +831,8 @@ module motor_plate()
 {
 		difference()
 		{
-			translate([-motor_plate_extra_x/2, 0, 0])
-				cube([36+motor_plate_extra_x,fat_plate_thickness,back_plate_height], center=true);
+			translate([-motor_plate_extra_x/2, 0, -1.5])
+				cube([36+motor_plate_extra_x,fat_plate_thickness,back_plate_height+3], center=true);
 			translate([-motor_plate_extra_x/2-23,0,-26])
 				cube([36,20,20], center=true);
 			translate([-motor_plate_extra_x/2-18.5,0,26])
@@ -817,22 +855,22 @@ module motor_plate()
 
 // The clip on the motor plate that holds the fan - reprap separately then glue on
 
-module motor_plate_clip()
+module motor_plate_clip(side = 1)
 {
 	difference()
 	{
-		translate([-2,0,0])
+		translate([-2+(fan_thickness-7)/2,0,0])
 		{
-			cube([9,8,20], center = true);
+			cube([9+fan_thickness-7,8,20], center = true);
 			translate([-4,0,0])
 				rotate([0,45,0])
 					cube([8,8,8], center = true);
 		}
-		translate([-8,4,0])
-			cube([16,8,30], center = true);
-		translate([0,4/sin(45),0])
+		translate([-7+fan_thickness-7,side*4,0])
+			cube([14,8,30], center = true);
+		translate([fan_thickness-7,side*4.5/sin(45),0])
 			rotate([0,0,45])
-				cube([8,8,30], center = true);
+				cube([9,9,30], center = true);
 	}
 }
 
@@ -873,15 +911,15 @@ translate(fixed_block_position)
 translate(base_position)
 	base_plate();
 
-//if(huxley)
-//	translate(clamp_position)
-//		belt_clamp();
+if(huxley)
+	translate(clamp_position)
+		belt_clamp();
 
-//translate(motor_plate_position)
-//	motor_plate();
+translate(motor_plate_position)
+	motor_plate();
 
-//translate(motor_plate_clip_position)
-//	motor_plate_clip();
+translate(motor_plate_clip_position)
+	motor_plate_clip();
 
 //translate(spacer_position)
 //	motor_spacer();
@@ -892,8 +930,8 @@ translate(base_position)
 translate(drive_assembly_position)
 	drive_assembly();
 
-//translate(fan_position)
-//	fan();
+translate(fan_position)
+	fan();
 
 //translate(accessories_position)
 //	accessories();

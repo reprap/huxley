@@ -44,7 +44,7 @@ motor_position=[-motor_radius*cos(motor_angle), 1, motor_radius*sin(motor_angle)
 
 fixed_block_position=[0,0,10];
 duct_offset=[-5.5,0,10];
-base_position=[0,0,-3.5];
+base_position=[0,0,-3];
 clamp_position=[-12, -44, -9];
 drive_assembly_position=[hub_x,filament_y_offset,hub_z];
 motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_height/2];
@@ -203,10 +203,6 @@ module fan(holes=false)
 module accessories(holes=false,  teardrop_angle=270)
 {
 
-	// Fan
-
-	translate(fan_position)
-		fan();
 
 	if(huxley)
 		translate([0,0,-bearing_depth/2])
@@ -230,7 +226,7 @@ module accessories(holes=false,  teardrop_angle=270)
 				//360 bearings
 		
 		
-					translate([i*20, -x_bar_gap/2, 0])
+					translate([i*30, -x_bar_gap/2, 0])
 						rotate([90,0,-90])
 							if(holes)
 								adjustable_bearing(true,  teardrop_angle);
@@ -241,7 +237,7 @@ module accessories(holes=false,  teardrop_angle=270)
 
 		// 180 bearing
 	
-			translate([20, x_bar_gap/2, 0])
+			translate([30, x_bar_gap/2, 0])
 				rotate([90, 0,90])
 					if(holes)
 						adjustable_bearing(false,  teardrop_angle);
@@ -251,13 +247,6 @@ module accessories(holes=false,  teardrop_angle=270)
 
 	if(holes)
 	{
-	
-		// Nozzle
-	
-		translate([0, 0, -23+plate_thickness])
-		cylinder(h=46,r=4,center=true, $fn=15);
-		nozzle_holes();
-
 		if(mendel)
 		{
 			for(i=[-1,1])
@@ -628,6 +617,7 @@ module base_plate()
 
 		difference()
 		{
+			translate([-2, 0, 0])
 			union()
 			{
 				translate([0, 0, plate_thickness/2])
@@ -643,7 +633,7 @@ module base_plate()
 					}
 			}
 
-			translate([-21, 0, 0])
+			translate([-23.25, 0, 0])
 				cube([10.5,21,30], center=true);
 
 			// Nozzle
@@ -654,10 +644,11 @@ module base_plate()
 			translate(-base_position)
 				nozzle_holes();
 
-			translate(accessories_position-base_position)
+			translate(accessories_position-base_position+[-2, 0, 0])
 				accessories(holes=true,  teardrop_angle=361);
-	
-			bracket_holes(teardrop_angle=90);
+
+			translate([-2, 0, 0])
+				bracket_holes(teardrop_angle=90);
 		}
 		/*difference()
 		{
@@ -905,8 +896,8 @@ translate(clamp_position)
 translate(fixed_block_position)
 	fixed_block();
 
-//translate(duct_offset)
-//	duct();
+translate(duct_offset)
+	duct();
 
 translate(base_position)
 	base_plate();
@@ -915,11 +906,11 @@ if(huxley)
 	translate(clamp_position)
 		belt_clamp();
 
-translate(motor_plate_position)
-	motor_plate();
+//translate(motor_plate_position)
+//	motor_plate();
 
-translate(motor_plate_clip_position)
-	motor_plate_clip();
+//translate(motor_plate_clip_position)
+//	motor_plate_clip();
 
 //translate(spacer_position)
 //	motor_spacer();
@@ -927,11 +918,11 @@ translate(motor_plate_clip_position)
 //translate(lever_offset)
 //	lever();
 
-translate(drive_assembly_position)
-	drive_assembly();
+//translate(drive_assembly_position)
+//	drive_assembly();
 
-translate(fan_position)
-	fan();
+//translate(fan_position)
+//	fan();
 
 //translate(accessories_position)
 //	accessories();

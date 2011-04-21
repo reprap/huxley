@@ -2,7 +2,7 @@
 
 // Set ONE OF these true.
 
-huxley=true;
+huxley=false;
 mendel=!huxley;
 
 

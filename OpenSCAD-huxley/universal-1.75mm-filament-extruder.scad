@@ -43,7 +43,7 @@ back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_he
 motor_position=[-motor_radius*cos(motor_angle), 1, motor_radius*sin(motor_angle)];
 
 fixed_block_position=[0,0,10];
-duct_offset=[-5.5,0,10];
+duct_offset=[-5.5,0,7];
 base_position=[0,0,-3];
 clamp_position=[-12, -44, -9];
 drive_assembly_position=[hub_x,filament_y_offset,hub_z];
@@ -539,8 +539,10 @@ module duct_i()
 {	
 	difference()
 	{
-		cube([45,20,50],center=true);
-		cube([41,16,46],center=true);
+		translate([0,0,1])
+			cube([45,20,52],center=true);
+		translate([0,0,1])
+			cube([41,16,48],center=true);
 		translate(fixed_block_position-duct_offset)
 			nozzle_holes(teardrop_angle=180);
 		translate([10,0,9])
@@ -703,15 +705,10 @@ module base_plate()
 			translate([24.5,0,10])
 				difference()
 				{
-					translate([-2+(fan_thickness-7)/2,0,-4])
-						cube([9+fan_thickness-7,20,17], center = true);
-					translate([-7+fan_thickness-7,0,4])
-						cube([14,30,8], center = true);
-					translate([-10+(fan_thickness-7)/2,0,1.5])
-						cube([16+fan_thickness-7,30,18], center = true);
-					translate([fan_thickness-7, 0, 4.5/sin(45)])
-						rotate([0,45,0])
-							cube([9,30,9], center = true);
+					translate([-4.5,0,-4.5])
+						cube([6,20,16], center = true);
+					translate([-11,0,-2])
+						cube([14,30,12], center = true);
 				}
 		}
 	}
@@ -899,33 +896,33 @@ translate(fixed_block_position)
 translate(duct_offset)
 	duct();
 
-translate(base_position)
+translate(base_position+[0,0,-3.2])
 	base_plate();
 
 if(huxley)
 	translate(clamp_position)
 		belt_clamp();
 
-//translate(motor_plate_position)
-//	motor_plate();
+translate(motor_plate_position)
+	motor_plate();
 
-//translate(motor_plate_clip_position)
-//	motor_plate_clip();
+translate(motor_plate_clip_position)
+	motor_plate_clip();
 
-//translate(spacer_position)
-//	motor_spacer();
+translate(spacer_position)
+	motor_spacer();
 
-//translate(lever_offset)
-//	lever();
+translate(lever_offset)
+	lever();
 
-//translate(drive_assembly_position)
-//	drive_assembly();
+translate(drive_assembly_position)
+	drive_assembly();
 
-//translate(fan_position)
-//	fan();
+translate(fan_position)
+	fan();
 
-//translate(accessories_position)
-//	accessories();
+translate(accessories_position)
+	accessories();
 //-----------------------------------------------------------------
 
 

@@ -862,6 +862,17 @@ module motor_plate_clip(side = 1)
 	}
 }
 
+// Spacer to fit Prusa X carriage
+
+module prusa_spacer()
+{
+	difference()
+	{
+		cylinder(r=6, h=15, center=true,$fn=4);
+		cylinder(r=2, h=25, center=true,$fn=40);
+	}
+}
+
 
 
 //------------------------------------------------------------------
@@ -937,6 +948,11 @@ translate(accessories_position)
 //adjustable_bearing(true,-1); // 2 off
 //adjustable_bearing(false,-1);
 //belt_clamp(); // 2 off
+//----
+
+// For Prusa
+//----
+//prusa_spacer(); // 2 off
 //----
 
 // For all

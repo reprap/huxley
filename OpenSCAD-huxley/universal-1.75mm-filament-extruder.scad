@@ -360,14 +360,14 @@ module m6_shaft(body=true,big_hole=7.5, teardrop_angle=-1)
 					translate(bearing_add)
 						cylinder(h=6,r=9.5,center=true);
 				else
-					teardrop(h=6.2,r=10,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
+					teardrop(h=6.2,r=9.6,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
 
 			translate([0,0,22])
 				if(body)
 					translate(-bearing_add)
 						cylinder(h=6,r=9.5,center=true);
 				else
-					teardrop(h=6.2,r=10,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
+					teardrop(h=6.2,r=9.6,center=true,teardrop_angle=teardrop_angle,truncateMM=0.5);
 		}	
 	}
 }
@@ -705,8 +705,8 @@ module base_plate()
 			translate([24.5,0,10])
 				difference()
 				{
-					translate([-4.5,0,-4.5])
-						cube([6,20,16], center = true);
+					translate([-4.5,0,-5.5])
+						cube([6,20,14], center = true);
 					translate([-11,0,-2])
 						cube([14,30,12], center = true);
 				}
@@ -739,7 +739,7 @@ module lever_spring()
 	{
 		cylinder(h=200, r=2,$fn=10);
 		translate([0,0,31])
-			cylinder(r=3.5,h=10, center=true, $fn=6);
+			cylinder(r=3.2,h=10, center=true, $fn=6);
 		translate([0,0,40])
 			cylinder(r=4,h=14, center=true, $fn=15);
 		translate([0,0,48.5])
@@ -868,7 +868,7 @@ module prusa_spacer()
 {
 	difference()
 	{
-		cylinder(r=6, h=15, center=true,$fn=4);
+		cube([10, 20, 15], center=true);
 		cylinder(r=2, h=25, center=true,$fn=40);
 	}
 }
@@ -898,7 +898,7 @@ translate(clamp_position)
 
 
 //--------------------------------------------------------------------
-
+/*
 // Uncomment to get entire assembly
 
 translate(fixed_block_position)
@@ -935,7 +935,7 @@ translate(fan_position)
 translate(accessories_position)
 	accessories();
 //-----------------------------------------------------------------
-
+*/
 
 
 
@@ -964,7 +964,7 @@ translate(accessories_position)
 //fixed_block();
 //lever();
 //base_plate();
-//motor_plate();
+motor_plate();
 //motor_plate_clip();
 //motor_spacer();
 //drive_gear();

@@ -635,6 +635,10 @@ module base_plate()
 					}
 			}
 
+			translate([0, 45, 0])
+				rotate([0,0,18])
+					cube([110,40,3*plate_thickness], center=true);
+
 			translate([-23.25, 0, 0])
 				cube([10.5,21,30], center=true);
 

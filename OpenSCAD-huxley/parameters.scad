@@ -2,7 +2,7 @@
 
 // Set ONE OF these true.
 
-huxley=false;
+huxley=true;
 mendel=!huxley;
 
 
@@ -12,7 +12,7 @@ pi=3.14159265;
 // The relative location in your file system where the .dxf files are
 // DXFs are for quick development.  They should be replaced by parameterised CSG in dure course.
 
-fileroot="DXF-files/";
+fileroot="Design-drawings/";
 
 rodsize = 6;	//threaded/smooth rod diameter in mm
 xaxis = 182.5;	//width of base in mm

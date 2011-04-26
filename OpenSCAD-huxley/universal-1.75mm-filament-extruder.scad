@@ -41,7 +41,7 @@ bearing_offset=[5+filament_radius, 0, 0];
 lever_spring_offset=[-39,5,back_plate_height+10];
 back_plate_position=[0,fixed_block_width/2+fat_plate_thickness/2,5+back_plate_height/2];
 motor_position=[-motor_radius*cos(motor_angle), 1, motor_radius*sin(motor_angle)];
-
+fan_block_position=[25,0,3.5];
 fixed_block_position=[0,0,10];
 duct_offset=[-5.5,0,7];
 base_position=[0,0,-3];
@@ -52,7 +52,7 @@ motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position;
 spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0];
 lever_offset=[0,0,hub_z];
 fan_position=[21.5 + (fan_thickness-7)/2,0,27];
-accessories_position=[0,0,0];
+accessories_position=[-5,0,-3];
 motor_add=[0, 0, 0];
 gear_add=[0, 0, 0];
 bearing_add=[0, 0, 0];
@@ -603,9 +603,9 @@ module belt_clamp()
 {
 	difference()
 	{
-		translate([0, 0, 0])
+		translate([-2, 0, -2])
 			cube([8,5,18], center=true);
-		translate(base_position-clamp_position)
+		translate(base_position-clamp_position- [2, 0, 0])
 			bracket_holes(teardrop_angle=-1);
 	}
 }
@@ -616,13 +616,13 @@ module base_plate()
 {
 	if(huxley)
 	{
-
+		translate([0,0,3])
 		difference()
 		{
 			translate([-2, 0, 0])
 			union()
 			{
-				translate([0, 0, plate_thickness/2])
+				translate([-3, 0, plate_thickness/2])
 					cube([70,60,plate_thickness], center=true);
 				translate([-6, 0, -2])
 					cube([34,20,7], center=true);
@@ -641,37 +641,17 @@ module base_plate()
 			// Nozzle
 		
 			translate([0, 0, -23+plate_thickness]-base_position)
-				cylinder(h=46,r=4,center=true, $fn=15);
+				cylinder(h=46,r=4.25,center=true, $fn=15);
 
 			translate(-base_position)
 				nozzle_holes();
 
-			translate(accessories_position-base_position+[-2, 0, 0])
+			translate(accessories_position-base_position)
 				accessories(holes=true,  teardrop_angle=361);
 
 			translate([-2, 0, 0])
 				bracket_holes(teardrop_angle=90);
 		}
-		/*difference()
-		{
-			union()
-			{
-				translate([0, 0, plate_thickness/2])
-					cube([50,60,plate_thickness], center=true);
-				if(huxley)
-					translate([0, -29,-8.5+plate_thickness/2])
-						difference()
-						{
-							cube([32, 20, 22], center=true);
-							translate([0, 8, -4])
-								cube([40, 20, 20], center=true);
-						}
-			}
-			accessories(holes=true, angle=361);
-	
-			translate(bracket_position-base_position)
-				bracket_holes(teardrop_angle=90);
-		}*/
 	} else
 	{
 		union()
@@ -862,6 +842,18 @@ module motor_plate_clip(side = 1)
 	}
 }
 
+// Block to support the fan - Huxley version
+
+module fan_block()
+{
+	difference()
+	{
+		cube([10, 20, 3], center=true);
+		translate(accessories_position-fan_block_position)
+			accessories(holes=true,  teardrop_angle=361);
+	}
+}
+
 // Spacer to fit Prusa X carriage
 
 module prusa_spacer()
@@ -898,7 +890,7 @@ translate(clamp_position)
 
 
 //--------------------------------------------------------------------
-/*
+
 // Uncomment to get entire assembly
 
 translate(fixed_block_position)
@@ -911,11 +903,16 @@ translate(base_position+[0,0,-3.2])
 	base_plate();
 
 if(huxley)
+{
 	translate(clamp_position)
 		belt_clamp();
+	translate(fan_block_position)
+		fan_block();
+}
 
 translate(motor_plate_position)
 	motor_plate();
+
 
 translate(motor_plate_clip_position)
 	motor_plate_clip();
@@ -934,20 +931,39 @@ translate(fan_position)
 
 translate(accessories_position)
 	accessories();
+
 //-----------------------------------------------------------------
+
+
+
+
+/*
+Individual built items
+
+Uncomment these one by one, then save the results as STL files
+You may find it useful to use a file name convention that is the
+module name plus the number off:
+
+adjustable_bearing_1_off.stl
+belt_clamp_2_off.stl
+
+etc.
+
 */
 
 
-
-
-// Individual built items
-// Uncomment these one by one, then save the results as STL files
+// The hob jig
+//----
+//hob_jig();
+//hob_jig_handle();
+//----
 
 // For Huxley
 //----
 //adjustable_bearing(true,-1); // 2 off
 //adjustable_bearing(false,-1);
 //belt_clamp(); // 2 off
+//fan_block();
 //----
 
 // For Prusa
@@ -957,14 +973,12 @@ translate(accessories_position)
 
 // For all
 
-//hob_jig();
-//hob_jig_handle();
 //duct(1);
 //duct(2);
 //fixed_block();
 //lever();
 //base_plate();
-motor_plate();
+//motor_plate();
 //motor_plate_clip();
 //motor_spacer();
 //drive_gear();

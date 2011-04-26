@@ -77,6 +77,7 @@ module y_axis_motor_mount()
 	}
 }
 
+/*
 module y_limit_switch_mount(z_offset = 0)
 {
 	difference()
@@ -109,7 +110,23 @@ module y_limit_switch_mount(z_offset = 0)
 		belt_bearing_holes(teardrop=true);
 	}
 }
+*/
+module limit_switch_rod_clamp()
+{
+	difference()
+	{
+		cube([16,6,7.8], center=true);
+		for(x=[-0.5,0.5])
+			translate([x*limit_switch_centres,0,0])
+					cylinder(h = 20*rodsize, r = limit_switch_hole_diameter/2, center = true, $fn = fn);
+		translate([0,0,4-rodsize/2])
+			rotate([90,0,0])
+				cylinder(h = 20*rodsize, r = rodsize/2, center = true, $fn = fn);
+		translate([0,0,4])
+			cube([rodsize,12,rodsize], center=true);
+	}
+}
 //rotate([0,0,30])
-y_limit_switch_mount();
+//y_limit_switch_mount();
 y_axis_motor_mount();
-
+//limit_switch_rod_clamp();

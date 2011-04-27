@@ -237,7 +237,7 @@ module accessories(holes=false,  teardrop_angle=270)
 
 		// 180 bearing
 	
-			translate([30, x_bar_gap/2, 0])
+			translate([-30, x_bar_gap/2, 0])
 				rotate([90, 0,90])
 					if(holes)
 						adjustable_bearing(false,  teardrop_angle);
@@ -626,7 +626,9 @@ module base_plate()
 					cube([70,60,plate_thickness], center=true);
 				translate([-6, 0, -2])
 					cube([34,20,7], center=true);
-				translate([0, -29,-8.5+plate_thickness/2])
+				translate([20, 12, -1])
+					cube([6,6,6], center=true);
+				translate([-8, -29,-8.5+plate_thickness/2])
 					difference()
 					{
 						cube([32, 20, 22], center=true);
@@ -635,9 +637,8 @@ module base_plate()
 					}
 			}
 
-			translate([0, 45, 0])
-				rotate([0,0,18])
-					cube([110,40,3*plate_thickness], center=true);
+			translate([27, 15, 0])
+					cube([15,32,20], center=true);
 
 			translate([-23.25, 0, 0])
 				cube([10.5,21,30], center=true);
@@ -653,7 +654,7 @@ module base_plate()
 			translate(accessories_position-base_position)
 				accessories(holes=true,  teardrop_angle=361);
 
-			translate([-2, 0, 0])
+			translate([-10, 0, 0])
 				bracket_holes(teardrop_angle=90);
 		}
 	} else
@@ -897,14 +898,14 @@ translate(clamp_position)
 
 // Uncomment to get entire assembly
 
+translate(base_position+[0,0,-3.2])
+	base_plate();
+
 translate(fixed_block_position)
 	fixed_block();
 
 translate(duct_offset)
 	duct();
-
-translate(base_position+[0,0,-3.2])
-	base_plate();
 
 if(huxley)
 {
@@ -937,7 +938,6 @@ translate(accessories_position)
 	accessories();
 
 //-----------------------------------------------------------------
-
 
 
 

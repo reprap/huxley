@@ -865,7 +865,7 @@ module prusa_spacer()
 {
 	difference()
 	{
-		cube([10, 20, 15], center=true);
+		cube([10, 20, 10], center=true);
 		cylinder(r=2, h=25, center=true,$fn=40);
 	}
 }

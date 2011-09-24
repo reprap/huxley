@@ -51,7 +51,7 @@ motor_plate_position=[0,-fixed_block_width/2-fat_plate_thickness/2,5+back_plate_
 motor_plate_clip_position=[24.5,-20.5,15]+fixed_block_position;
 spacer_position=drive_assembly_position + motor_position + [0, 10.75, 0];
 lever_offset=[0,0,hub_z];
-fan_position=[21.5 + (fan_thickness-7)/2,0,27];
+fan_position=[21.5 + (fan_thickness-7)/2,0,25];
 accessories_position=[-5,0,-3];
 motor_add=[0, 0, 0];
 gear_add=[0, 0, 0];
@@ -690,9 +690,10 @@ module base_plate()
 			translate([24.5,0,10])
 				difference()
 				{
-					translate([-4.5,0,-5.5])
-						cube([6,20,14], center = true);
-					translate([-11,0,-2])
+					translate([-5,0,-3.5])
+						rotate([0,25,0])
+						cube([4,20,16], center = true);
+					translate([-5,0,6.5])
 						cube([14,30,12], center = true);
 				}
 		}
